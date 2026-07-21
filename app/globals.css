@@ -3,21 +3,28 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --accent-gold: #cca352;
+  --accent-gold-dark: #b88e3d;
+  --dark-bg: #0d0e11;
+  --card-bg: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-[#cca352]: var(--accent-gold);
+  --color-gold-dark: var(--accent-gold-dark);
+  --color-dark: var(--dark-bg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   background: var(--background);
