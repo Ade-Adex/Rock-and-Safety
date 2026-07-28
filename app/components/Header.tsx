@@ -19,8 +19,8 @@ export default function Header() {
             <span className="whitespace-nowrap flex items-center gap-1.5">
               <span>📞</span> +234 810 000 0000
             </span>
-            <span className="truncate max-w-[200px] min-[400px]:max-w-none flex items-center gap-1.5">
-              <span>✉️</span> info@rockandsafetymarketinghub.com
+            <span className="truncate max-w-50 min-[400px]:max-w-none flex items-center gap-1.5">
+              <span>✉️</span> info@rockandsafety.com
             </span>
           </div>
 
