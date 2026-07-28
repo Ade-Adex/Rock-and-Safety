@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import NavLinks from './NavLinks'
 import Logo from '@/public/Images/Logo.jpeg'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
+import NavLinks from './NavLinks'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -17,7 +17,7 @@ export default function Header() {
           {/* Contact Details */}
           <div className="flex items-center space-x-4 sm:space-x-6 text-[11px] sm:text-xs">
             <span className="whitespace-nowrap flex items-center gap-1.5">
-              <span>📞</span> +234 810 000 0000
+              <span>📞</span> +234 815 224 5314
             </span>
             <span className="truncate max-w-50 min-[400px]:max-w-none flex items-center gap-1.5">
               <span>✉️</span> info@rockandsafety.com
