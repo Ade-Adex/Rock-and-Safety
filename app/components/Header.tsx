@@ -10,7 +10,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 bg-dark/95 backdrop-blur-md border-b border-gray-800/80">
+    <header className="sticky top-0 z-50 bg-dark border-b border-gray-800/80">
       {/* Top Bar */}
       <div className="bg-[#08090b] text-gray-400 text-xs py-2 px-4 sm:px-8 border-b border-gray-800/60">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
