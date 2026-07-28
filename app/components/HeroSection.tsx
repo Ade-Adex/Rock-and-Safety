@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import MarketMock from '@/public/Images/Market.jpeg'
+import WhatsAppButton from '@/app/components/WhatsAppButton'
 
 export default function HeroSection() {
   return (
@@ -31,12 +32,7 @@ export default function HeroSection() {
               <span>GET STARTED</span>
               <span>→</span>
             </Link>
-            <Link
-              href="#consultation"
-              className="border border-accent-gold text-accent-gold hover:bg-accent-gold hover:text-black font-extrabold text-sm px-7 py-3.5 rounded-md text-center transition-all active:scale-[0.98]"
-            >
-              BOOK A FREE CONSULTATION
-            </Link>
+            <WhatsAppButton />
           </div>
 
           {/* Feature Highlights Grid */}
@@ -69,7 +65,7 @@ export default function HeroSection() {
         </div>
 
         {/* Right Media Display */}
-        <div className="relative w-full aspect-4/3 sm:aspect-video lg:aspect-square max-h-[480px] rounded-2xl overflow-hidden shadow-2xl border border-gray-800">
+        <div className="relative w-full aspect-4/3 sm:aspect-video lg:aspect-square max-h-120rounded-2xl overflow-hidden shadow-2xl border border-gray-800">
           <Image
             src={MarketMock}
             alt="Marketing Workspace Mockup"

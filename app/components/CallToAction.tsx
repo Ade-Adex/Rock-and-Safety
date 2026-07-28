@@ -1,3 +1,4 @@
+import WhatsAppButton from '@/app/components/WhatsAppButton'
 import Link from 'next/link'
 
 export default function CallToAction() {
@@ -22,12 +23,7 @@ export default function CallToAction() {
           >
             GET STARTED TODAY →
           </Link>
-          <Link
-            href="#consultation"
-            className="border border-accent-gold text-accent-gold hover:bg-accent-gold hover:text-black font-extrabold text-xs px-8 py-3.5 rounded-md transition-all uppercase"
-          >
-            BOOK A CONSULTATION
-          </Link>
+          <WhatsAppButton />
         </div>
       </div>
     </section>
