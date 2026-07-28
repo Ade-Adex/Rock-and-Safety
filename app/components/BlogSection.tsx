@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 
 const posts = [
   {
@@ -17,43 +18,60 @@ const posts = [
 
 export default function BlogSection() {
   return (
-    <section className="bg-background text-foreground py-20 px-6 md:px-16">
-      <div className="flex justify-between items-end max-w-6xl mx-auto mb-12">
+    <section className="bg-card-bg text-foreground py-16 sm:py-20 px-4 sm:px-8 md:px-12 lg:px-16">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between max-w-6xl mx-auto mb-10 sm:mb-12 gap-4">
         <div>
-          <span className="text-[#cca352] text-xs font-bold uppercase tracking-wider">
+          <span className="text-accent-gold text-xs font-bold uppercase tracking-widest">
             OUR BLOG
           </span>
-          <h2 className="text-3xl font-bold mt-2">Latest Insights & Tips</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-2 text-gray-900">
+            Latest Insights & Tips
+          </h2>
         </div>
-        <a href="#" className="text-xs font-bold hover:text-[#cca352]">
-          VIEW ALL POSTS →
-        </a>
+        <Link
+          href="#blog"
+          className="text-xs font-bold text-accent-gold hover:underline flex items-center space-x-1 self-start sm:self-auto uppercase"
+        >
+          <span>VIEW ALL POSTS</span>
+          <span>→</span>
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
         {posts.map((post, idx) => (
-          <div
+          <article
             key={idx}
-            className="bg-background rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm"
+            className="group bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col"
           >
-            <Image
-              src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a"
-              alt="Blog Post"
-              width={400}
-              height={250}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6">
-              <span className="text-xs text-gray-400">{post.date}</span>
-              <h3 className="font-bold mt-2 mb-4 leading-snug">{post.title}</h3>
-              <a
-                href="#"
-                className="text-xs font-bold text-[#cca352] hover:underline"
-              >
-                READ MORE →
-              </a>
+            <div className="relative w-full aspect-16/10 overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a"
+                alt="Blog Post"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover group-hover:scale-105 transition duration-500"
+              />
             </div>
-          </div>
+            <div className="p-6 flex flex-col flex-grow justify-between">
+              <div>
+                <span className="text-xs text-gray-400 font-medium">
+                  {post.date}
+                </span>
+                <h3 className="font-bold text-base mt-2 mb-4 leading-snug text-gray-900 group-hover:text-accent-gold transition-colors">
+                  {post.title}
+                </h3>
+              </div>
+              <Link
+                href="#blog"
+                className="text-xs font-extrabold text-accent-gold inline-flex items-center space-x-1 mt-2 uppercase"
+              >
+                <span>READ MORE</span>
+                <span className="transition-transform group-hover:translate-x-1">
+                  →
+                </span>
+              </Link>
+            </div>
+          </article>
         ))}
       </div>
     </section>

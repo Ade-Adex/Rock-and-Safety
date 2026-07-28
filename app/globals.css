@@ -12,7 +12,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-[#cca352]: var(--accent-gold);
+  --color-accent-gold: var(--accent-gold);
   --color-gold-dark: var(--accent-gold-dark);
   --color-dark: var(--dark-bg);
   --font-sans: var(--font-geist-sans);
