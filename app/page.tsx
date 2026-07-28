@@ -5,20 +5,30 @@ import PortfolioSection from '@/app/components/PortfolioSection'
 import TestimonialsSection from '@/app/components/TestimonialsSection'
 import StatsSection from '@/app/components/StatsSection'
 import BlogSection from '@/app/components/BlogSection'
-import Footer from '@/app/components/Footer'
 import CallToAction from '@/app/components/CallToAction'
+import Footer from '@/app/components/Footer'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background text-foreground font-sans">
+    <main className="min-h-screen bg-background text-foreground font-sans scroll-smooth">
       <Header />
-      <HeroSection />
-      <ServicesSection />
-      <PortfolioSection />
+      <div id="home">
+        <HeroSection />
+      </div>
+      <div id="services">
+        <ServicesSection />
+      </div>
+      <div id="portfolio">
+        <PortfolioSection />
+      </div>
       <TestimonialsSection />
       <StatsSection />
-      <BlogSection />
-      <CallToAction />
+      <div id="blog">
+        <BlogSection />
+      </div>
+      <div id="contact">
+        <CallToAction />
+      </div>
       <Footer />
     </main>
   )

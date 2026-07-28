@@ -19,12 +19,11 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
+/* Enable global smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem; 
+}
 
 body {
   background: var(--background);

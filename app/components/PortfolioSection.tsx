@@ -1,7 +1,13 @@
+'use client'
+
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { portfolioItems } from '@/app/data/portfolioData'
 
 export default function PortfolioSection() {
+  const [activeTab, setActiveTab] = useState('All')
+
   const tabs = [
     'All',
     'Web Design',
@@ -10,6 +16,12 @@ export default function PortfolioSection() {
     'Marketing',
     'Publishing',
   ]
+
+  // Filter items based on activeTab state
+  const filteredItems =
+    activeTab === 'All'
+      ? portfolioItems
+      : portfolioItems.filter((item) => item.category === activeTab)
 
   return (
     <section className="bg-dark text-white py-16 sm:py-20 px-4 sm:px-8 md:px-12 lg:px-16">
@@ -22,39 +34,50 @@ export default function PortfolioSection() {
         </h2>
       </div>
 
-      {/* Tabs Filter */}
+      {/* Dynamic Tabs Filter */}
       <div className="flex flex-wrap justify-center gap-2 mb-10 max-w-3xl mx-auto">
-        {tabs.map((tab, i) => (
-          <button
-            key={i}
-            className={`px-4 py-2 text-xs font-semibold rounded-full transition-all duration-200 ${
-              i === 0
-                ? 'bg-accent-gold text-black shadow-md shadow-accent-gold/20'
-                : 'bg-gray-900 text-gray-300 border border-gray-800 hover:bg-gray-800 hover:text-white'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab
+          return (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 text-xs font-semibold rounded-full transition-all duration-200 cursor-pointer ${
+                isActive
+                  ? 'bg-accent-gold text-black shadow-md shadow-accent-gold/20'
+                  : 'bg-gray-900 text-gray-300 border border-gray-800 hover:bg-gray-800 hover:text-white'
+              }`}
+            >
+              {tab}
+            </button>
+          )
+        })}
       </div>
 
-      {/* Portfolio Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 max-w-7xl mx-auto">
-        {[1, 2, 3, 4, 5].map((item) => (
+      {/* Filtered Portfolio Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 max-w-7xl mx-auto min-h-[250px]">
+        {filteredItems.map((item) => (
           <div
-            key={item}
+            key={item.id}
             className="relative group rounded-xl overflow-hidden bg-gray-900 border border-gray-800 aspect-4/3 sm:aspect-square"
           >
             <Image
-              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f"
-              alt="Project image"
+              src={item.image}
+              alt={item.title}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
               className="object-cover group-hover:scale-110 transition duration-500 ease-out"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-              <span className="text-xs font-bold text-white tracking-wide">
-                Project View →
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+              <span className="text-[10px] uppercase font-bold text-accent-gold tracking-widest">
+                {item.category}
+              </span>
+              <h3 className="text-sm font-bold text-white mt-0.5">
+                {item.title}
+              </h3>
+              <span className="text-xs font-semibold text-gray-300 mt-2 flex items-center gap-1">
+                View Project →
               </span>
             </div>
           </div>
