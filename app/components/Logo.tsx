@@ -37,7 +37,7 @@ export default function LogoComponent({
 
       <div className="flex flex-col justify-center leading-none whitespace-nowrap">
         <span
-          className={`text-white text-sm md:text-base font-black tracking-wider group-hover:text-primary transition-colors ${titleSizeClassName}`}
+          className={`text-foreground text-sm md:text-base font-black tracking-wider group-hover:text-primary transition-colors ${titleSizeClassName}`}
         >
           ROCK <span className="text-primary">&</span> SAFETY
         </span>
