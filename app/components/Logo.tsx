@@ -32,17 +32,17 @@ export default function LogoComponent({
       </div>
 
       <div
-        className={`hidden sm:block w-px bg-accent-gold/40 group-hover:bg-accent-gold transition-colors shrink-0 ${dividerHeightClassName}`}
+        className={`block w-px bg-primary/40 group-hover:bg-primary transition-colors shrink-0 ${dividerHeightClassName}`}
       />
 
-      <div className="hidden sm:flex flex-col justify-center leading-none whitespace-nowrap">
+      <div className="flex flex-col justify-center leading-none whitespace-nowrap">
         <span
-          className={`text-white font-black tracking-wider group-hover:text-accent-gold transition-colors ${titleSizeClassName}`}
+          className={`text-white text-sm md:text-base font-black tracking-wider group-hover:text-primary transition-colors ${titleSizeClassName}`}
         >
-          ROCK <span className="text-accent-gold">&</span> SAFETY
+          ROCK <span className="text-primary">&</span> SAFETY
         </span>
         <span
-          className={`font-bold text-gray-400 tracking-[0.2em] uppercase mt-1 ${subtitleSizeClassName}`}
+          className={`font-bold text-muted text-xs md:text-sm tracking-[0.2em] uppercase mt-1 ${subtitleSizeClassName}`}
         >
           Marketing Hub
         </span>
