@@ -125,7 +125,7 @@ export default function QuickNav() {
             onClick={() => handleScroll(link.href)}
             className={`group relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 focus:outline-none cursor-pointer ${
               isActive
-                ? 'bg-primary text-dark shadow-xs scale-105'
+                ? 'bg-primary text-secondary shadow-xs scale-105'
                 : 'bg-transparent hover:bg-foreground/5'
             }`}
             aria-label={`Scroll to ${link.label}`}
@@ -137,9 +137,7 @@ export default function QuickNav() {
             {IconElement && (
               <IconElement
                 className={`w-4 h-4 transition-colors duration-300 stroke-[2.5] ${
-                  isActive
-                    ? 'text-dark'
-                    : 'text-muted group-hover:text-primary'
+                  isActive ? 'text-secondary' : 'text-muted group-hover:text-primary'
                 }`}
               />
             )}
