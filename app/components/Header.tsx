@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import LogoComponent from '@/app/components/Logo'
-import NavLinks from './NavLinks'
+import NavLinks from '@/app/components/header/NavLinks'
 import HeaderTopBar from './header/HeaderTopBar'
 import HeaderMobileMenu from './header/HeaderMobileMenu'
 
