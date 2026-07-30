@@ -1,3 +1,4 @@
+import { NAV_LINKS } from '@/app/constants/navigation'
 import Link from 'next/link'
 
 interface NavLinksProps {
@@ -5,19 +6,12 @@ interface NavLinksProps {
   mobile?: boolean
 }
 
-const links = [
-  { name: 'HOME', href: '/' },
-  { name: 'ABOUT US', href: '#about' },
-  { name: 'SERVICES', href: '#services' },
-  { name: 'PORTFOLIO', href: '#portfolio' },
-  { name: 'BLOG', href: '#blog' },
-  { name: 'CONTACT', href: '#contact' },
-]
-
 export default function NavLinks({
   onLinkClick,
   mobile = false,
 }: NavLinksProps) {
+  const navLinks = NAV_LINKS.filter((link) => !link.hideInNavbar)
+
   return (
     <nav
       className={`flex ${
@@ -26,18 +20,18 @@ export default function NavLinks({
           : 'items-center space-x-6 text-xs font-bold tracking-wider'
       }`}
     >
-      {links.map((link) => (
+      {navLinks.map((link) => (
         <Link
-          key={link.name}
+          key={link.label}
           href={link.href}
           onClick={onLinkClick}
           className={`${
             mobile
-              ? 'text-gray-200 hover:text-accent-gold text-base py-2 border-b border-gray-800/60 font-semibold'
-              : 'text-gray-300 hover:text-accent-gold transition-colors'
+              ? 'text-foreground hover:text-primary-dark text-base py-2 border-b border-card-border font-semibold'
+              : 'text-foreground hover:text-primary-dark transition-colors text-base'
           }`}
         >
-          {link.name}
+          {link.label}
         </Link>
       ))}
     </nav>

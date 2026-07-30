@@ -1,25 +1,48 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --accent-gold: #cca352;
-  --accent-gold-dark: #b88e3d;
+  --background: #0d0e11;
+  --foreground: #ededed;
+  --card-bg: #13151a;
+  --card-border: #21262d;
+  --muted: #94a3b8;
+  
+  /* Primary Brand Colors (Gold Theme) */
+  --primary: #cca352;
+  --secondary: #0d0e11;
+  --primary-dark: #b88e3d;
+  
+  /* Surface Tokens */
+  --surface-white: #ffffff;
+  --surface-white-muted: #f8fafc;
+  --surface-white-border: #e2e8f0;
+  
   --dark-bg: #0d0e11;
-  --card-bg: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-accent-gold: var(--accent-gold);
-  --color-gold-dark: var(--accent-gold-dark);
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
+  --color-muted: var(--muted);
+  
+  /* Mapped Tailwind Color Utilities */
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-primary-dark: var(--primary-dark);
+  --color-accent-gold: var(--primary);
+  --color-gold-dark: var(--primary-dark);
+  
+  --color-surface-white: var(--surface-white);
+  --color-surface-white-muted: var(--surface-white-muted);
+  --color-surface-white-border: var(--surface-white-border);
+  
   --color-dark: var(--dark-bg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-/* Enable global smooth scrolling */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem; 
