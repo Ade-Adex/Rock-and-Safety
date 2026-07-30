@@ -34,7 +34,7 @@ export default function FooterNewsletter() {
       <p className="mb-3 leading-relaxed">
         Subscribe to get the latest news, tips and offers.
       </p>
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <input
           type="email"
           name="email"
