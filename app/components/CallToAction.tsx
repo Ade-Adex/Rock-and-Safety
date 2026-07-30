@@ -18,7 +18,7 @@ export default function CallToAction() {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link href="#get-started">
+          <Link href="#contact">
             <Button variant="primary" className="w-full sm:w-auto">
               <span>GET STARTED TODAY →</span>
             </Button>

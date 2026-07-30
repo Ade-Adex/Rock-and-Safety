@@ -26,7 +26,7 @@ export default function HeroSection() {
 
           {/* Action Buttons */}
           <div className="mt-8 flex flex-col sm:flex-row w-full sm:w-auto gap-4">
-            <Link href="#get-started">
+            <Link href="#contact">
               <Button variant="primary" className="w-full sm:w-auto">
                 <span>GET STARTED</span>
                 <span className="ml-2">→</span>

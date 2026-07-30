@@ -39,10 +39,12 @@ export default function LogoComponent({
         <span
           className={`text-foreground text-sm md:text-base font-black tracking-wider group-hover:text-primary transition-colors ${titleSizeClassName}`}
         >
-          ROCK <span className="text-primary">&</span> SAFETY
+          ROCK{' '}
+          <span className="text-primary group-hover:text-foreground">&</span>{' '}
+          SAFETY
         </span>
         <span
-          className={`font-bold text-muted text-xs md:text-sm tracking-[0.2em] uppercase mt-1 ${subtitleSizeClassName}`}
+          className={`font-bold text-muted group-hover:text-foreground text-xs md:text-sm tracking-[0.2em] uppercase mt-1 ${subtitleSizeClassName}`}
         >
           Marketing Hub
         </span>
