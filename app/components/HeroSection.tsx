@@ -10,10 +10,10 @@ export default function HeroSection() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         {/* Left Text Content */}
         <div className="flex flex-col items-start text-left">
-          <span className="inline-block bg-primary/10 text-primary text-xs font-extrabold tracking-widest uppercase px-3 py-1.5 rounded-full border border-primary/20 mb-4">
+          <div className="mx-auto md:mx-0 bg-primary/10 text-primary text-[10px] font-extrabold tracking-widest uppercase px-3 py-1.5 rounded-full border border-primary/20 mb-4">
             WE BUILD BRANDS. WE DRIVE GROWTH.
-          </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight sm:leading-snug text-foreground">
+          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight sm:leading-snug text-center md:text-start text-foreground">
             Grow Your Business with{' '}
             <span className="text-primary">Digital Marketing</span> That
             Delivers Results
