@@ -102,10 +102,10 @@ export default function QuickNav() {
         <>
           <button
             onClick={handleScrollToTop}
-            className="group relative flex items-center justify-center w-8 h-8 rounded-full bg-dark text-foreground hover:bg-accent-gold hover:text-dark transition-all duration-300 focus:outline-none cursor-pointer"
+            className="group relative flex items-center justify-center w-8 h-8 rounded-full bg-card-bg text-foreground hover:bg-primary hover:text-secondary transition-all duration-300 focus:outline-none cursor-pointer"
             aria-label="Scroll back to top"
           >
-            <span className="absolute right-10 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-150 ease-out bg-dark text-foreground text-[11px] font-bold tracking-wide px-2.5 py-1.5 rounded-md whitespace-nowrap shadow-md border border-card-border">
+            <span className="absolute right-10 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-150 ease-out bg-card-bg text-foreground text-[11px] font-bold tracking-wide px-2.5 py-1.5 rounded-md whitespace-nowrap shadow-md border border-card-border">
               Back To Top
             </span>
             <FaArrowUp className="w-3.5 h-3.5" />
@@ -125,12 +125,12 @@ export default function QuickNav() {
             onClick={() => handleScroll(link.href)}
             className={`group relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 focus:outline-none cursor-pointer ${
               isActive
-                ? 'bg-accent-gold text-dark shadow-xs scale-105'
-                : 'bg-transparent hover:bg-white/5'
+                ? 'bg-primary text-dark shadow-xs scale-105'
+                : 'bg-transparent hover:bg-foreground/5'
             }`}
             aria-label={`Scroll to ${link.label}`}
           >
-            <span className="absolute right-10 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-150 ease-out bg-dark text-foreground text-[11px] font-bold tracking-wide px-2.5 py-1.5 rounded-md whitespace-nowrap shadow-md border border-card-border">
+            <span className="absolute right-10 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-150 ease-out bg-card-bg text-foreground text-[11px] font-bold tracking-wide px-2.5 py-1.5 rounded-md whitespace-nowrap shadow-md border border-card-border">
               {link.label}
             </span>
 
@@ -139,7 +139,7 @@ export default function QuickNav() {
                 className={`w-4 h-4 transition-colors duration-300 stroke-[2.5] ${
                   isActive
                     ? 'text-dark'
-                    : 'text-muted group-hover:text-accent-gold'
+                    : 'text-muted group-hover:text-primary'
                 }`}
               />
             )}

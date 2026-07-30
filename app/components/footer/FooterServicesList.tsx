@@ -17,7 +17,7 @@ export default function FooterServicesList() {
           <li key={service}>
             <Link
               href="#services"
-              className="hover:text-accent-gold transition-colors"
+              className="hover:text-primary transition-colors"
             >
               {service}
             </Link>

@@ -14,7 +14,7 @@ export default function FooterQuickLinks() {
           <li key={link.label}>
             <Link
               href={link.href}
-              className="hover:text-accent-gold transition-colors"
+              className="hover:text-primary transition-colors"
             >
               {link.label}
             </Link>

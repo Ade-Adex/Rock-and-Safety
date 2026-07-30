@@ -16,11 +16,11 @@ export default function FooterNewsletter() {
         <input
           type="email"
           placeholder="Enter your email"
-          className="w-full p-2.5 rounded-lg bg-gray-900 border border-gray-800 text-foreground focus:outline-none focus:border-accent-gold transition-colors"
+          className="w-full p-2.5 rounded-lg bg-card-bg border border-card-border text-foreground focus:outline-none focus:border-primary transition-colors"
         />
         <button
           type="submit"
-          className="w-full bg-accent-gold hover:bg-gold-dark text-black font-extrabold py-2.5 rounded-lg transition-all active:scale-[0.98] uppercase cursor-pointer"
+          className="w-full bg-primary hover:bg-primary text-secondary font-extrabold py-2.5 rounded-lg transition-all active:scale-[0.98] uppercase cursor-pointer"
         >
           SUBSCRIBE
         </button>
