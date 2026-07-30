@@ -12,12 +12,27 @@ export async function subscribeNewsletter(formData: FormData) {
   }
 
   try {
-    // Optional: You can send an email to yourself, or use Resend Audience API if you set up contacts
+    // 1. Add the subscriber to your Resend Contacts/Audience
+    // (If you created a specific Audience ID in your Resend dashboard, you can pass `audienceId: 'YOUR_ID'`)
+    const { error: contactError } = await resend.contacts.create({
+      email: email,
+      unsubscribed: false,
+    })
+
+    if (contactError) {
+      console.error('Resend contact error:', contactError)
+      return {
+        success: false,
+        message: 'This email might already be subscribed.',
+      }
+    }
+
+    // 2. (Optional) Send a notification email to yourself about the new subscriber
     await resend.emails.send({
-      from: `Rock & Safety <onboarding@resend.dev>`, // Replace with your verified domain e.g. info@rockandsafety.com once DNS verifies
-      to: ['info@rockandsafety.com'], // Where you want to receive notifications
-      subject: 'New Newsletter Subscriber',
-      text: `New subscriber email: ${email}`,
+      from: `Rock & Safety <info@rockandsafety.com>`, // Use your verified domain email
+      to: ['info@rockandsafety.com'],
+      subject: 'New Newsletter Subscriber!',
+      text: `A new user just subscribed to the newsletter: ${email}`,
     })
 
     return { success: true, message: 'Thank you for subscribing!' }
