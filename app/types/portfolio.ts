@@ -1,5 +1,10 @@
 export type CategoryType =
-  'Web Development' | 'Branding' | 'UI/UX Design' | 'Marketing' | 'Publishing'
+  | 'Web Development'
+  | 'Branding'
+  | 'UI/UX Design'
+  | 'Marketing'
+  | 'Publishing'
+  | string
 
 export interface PortfolioItem {
   _id: string

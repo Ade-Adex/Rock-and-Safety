@@ -1,11 +1,9 @@
-'use client'
-
-import React, { use } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { portfolioItems, PortfolioItem } from '@/app/data/portfolioData'
 import SectionHeader from '@/app/components/ui/SectionHeader'
 import Button from '@/app/components/ui/Button'
+import { fetchPortfolio } from '@/sanity/services/contentService'
+import { PortfolioItem } from '@/app/types/portfolio'
 
 interface ProjectsPageProps {
   searchParams: Promise<{
@@ -14,19 +12,24 @@ interface ProjectsPageProps {
   }>
 }
 
-export default function ProjectDetailsPage({
+export default async function ProjectDetailsPage({
   searchParams,
 }: ProjectsPageProps) {
-  const params = use(searchParams)
-  const categoryQuery = params.category || 'All'
-  const serviceTitle = params.service || 'Service'
+  // Await searchParams in Next.js Server Components
+  const resolvedParams = await searchParams
+  const categoryQuery = resolvedParams.category || 'All'
+  const serviceTitle = resolvedParams.service || 'Service'
+
+  // Fetch live portfolio data from Sanity
+  const allProjects: PortfolioItem[] = await fetchPortfolio()
 
   // Filter projects matching selected category
   const relatedProjects =
     categoryQuery === 'All'
-      ? portfolioItems
-      : portfolioItems.filter(
-          (item) => item.category.toLowerCase() === categoryQuery.toLowerCase(),
+      ? allProjects
+      : allProjects.filter(
+          (item) =>
+            item.category?.toLowerCase() === categoryQuery.toLowerCase(),
         )
 
   return (
@@ -62,20 +65,28 @@ export default function ProjectDetailsPage({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {relatedProjects.map((item: PortfolioItem) => (
               <div
-                key={item.id}
+                key={item._id}
                 className="group rounded-xl overflow-hidden bg-card-bg border border-card-border flex flex-col justify-between hover:border-primary/50 transition-all duration-300 shadow-lg"
               >
-                <div className="relative aspect-16/9 w-full overflow-hidden">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                  />
-                  <span className="absolute top-3 left-3 bg-dark/80 backdrop-blur-md text-accent-gold text-[10px] font-bold px-2.5 py-1 rounded-md border border-card-border uppercase tracking-wider">
-                    {item.category}
-                  </span>
+                <div className="relative aspect-16/9 w-full overflow-hidden bg-card-border">
+                  {item.image ? (
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted text-xs">
+                      No Image Available
+                    </div>
+                  )}
+                  {item.category && (
+                    <span className="absolute top-3 left-3 bg-dark/80 backdrop-blur-md text-accent-gold text-[10px] font-bold px-2.5 py-1 rounded-md border border-card-border uppercase tracking-wider">
+                      {item.category}
+                    </span>
+                  )}
                 </div>
 
                 <div className="p-6 flex flex-col grow justify-between">

@@ -1,9 +1,15 @@
-import { posts } from '@/app/data/post'
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import SectionHeader from '@/app/components/ui/SectionHeader'
+import { PostItem } from '@/app/types/post'
 
-export default function BlogSection() {
+interface BlogSectionProps {
+  posts: PostItem[]
+}
+
+export default function BlogSection({ posts }: BlogSectionProps) {
   return (
     <section className="bg-card-bg text-foreground py-12 px-4 sm:px-8 md:px-12 lg:px-16 border-t border-card-border">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between max-w-6xl mx-auto gap-4">
@@ -15,7 +21,7 @@ export default function BlogSection() {
           />
         </div>
         <Link
-          href="#blog"
+          href="/blog"
           className="hidden md:flex text-xs font-bold text-primary hover:underline items-center space-x-1 self-start sm:self-auto uppercase mb-12 sm:mb-16"
         >
           <span>VIEW ALL POSTS</span>
@@ -24,20 +30,26 @@ export default function BlogSection() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 max-w-6xl mx-auto">
-        {posts.map((post, idx) => (
+        {posts.map((post) => (
           <article
-            key={idx}
+            key={post._id}
             className="group bg-dark rounded-2xl overflow-hidden border border-card-border shadow-sm hover:shadow-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
           >
             <div>
               <div className="relative w-full aspect-16/10 overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a"
-                  alt="Blog Post"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition duration-500"
-                />
+                {post.imageUrl ? (
+                  <Image
+                    src={post.imageUrl}
+                    alt={post.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-card-border flex items-center justify-center text-muted">
+                    No Image
+                  </div>
+                )}
               </div>
               <div className="p-6">
                 <span className="text-xs text-muted font-medium">
@@ -50,7 +62,7 @@ export default function BlogSection() {
             </div>
             <div className="px-6 pb-6">
               <Link
-                href="#blog"
+                href="/blog"
                 className="text-xs font-extrabold text-primary inline-flex items-center space-x-1 uppercase"
               >
                 <span>READ MORE</span>

@@ -1,11 +1,17 @@
-import { statsData } from '@/app/data/statsData'
+import { StatItem } from '@/app/types/stat'
 
-export default function StatsSection() {
+interface StatsSectionProps {
+  stats: StatItem[]
+}
+
+export default function StatsSection({ stats }: StatsSectionProps) {
+  if (!stats || stats.length === 0) return null
+
   return (
     <section className="bg-surface-white text-secondary py-12 sm:py-14 border-y border-card-border px-4 sm:px-8">
       <div className="max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-        {statsData.map((stat, idx) => (
-          <div key={idx} className="p-2">
+        {stats.map((stat) => (
+          <div key={stat._id} className="p-2">
             <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary-dark tracking-tight">
               {stat.value}
             </span>

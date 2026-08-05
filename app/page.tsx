@@ -10,7 +10,36 @@ import FaqAccordion from '@/app/components/FaqAccordion'
 import Contact from '@/app/components/Contact'
 import QuickNav from '@/app/components/QuickNav'
 
-export default function Home() {
+import {
+  fetchServices,
+  fetchPortfolio,
+  fetchTestimonials,
+  fetchTeam,
+  fetchStats,
+  fetchLatestPosts,
+  fetchFaqs,
+} from '@/sanity/services/contentService'
+
+export default async function Home() {
+  // Fetch all CMS data concurrently on the server
+  const [
+    services,
+    portfolio,
+    testimonials,
+    teamMembers,
+    stats,
+    latestPosts,
+    faqs,
+  ] = await Promise.all([
+    fetchServices(),
+    fetchPortfolio(),
+    fetchTestimonials(),
+    fetchTeam(),
+    fetchStats(),
+    fetchLatestPosts(3),
+    fetchFaqs(),
+  ])
+
   return (
     <main className="min-h-screen bg-background text-foreground font-sans scroll-smooth relative">
       <QuickNav />
@@ -18,25 +47,25 @@ export default function Home() {
         <HeroSection />
       </div>
       <div id="services">
-        <ServicesSection />
+        <ServicesSection services={services} />
       </div>
       <div id="portfolio">
-        <PortfolioSection />
+        <PortfolioSection items={portfolio} />
       </div>
       <div id="testimonials">
-        <TestimonialsSection />
+        <TestimonialsSection testimonials={testimonials} />
       </div>
       <div id="team">
-        <Team />
+        <Team teamMembers={teamMembers} />
       </div>
       <div id="stats">
-        <StatsSection />
+        <StatsSection stats={stats} />
       </div>
       <div id="blog">
-        <BlogSection />
+        <BlogSection posts={latestPosts} />
       </div>
       <div id="faq">
-        <FaqAccordion />
+        <FaqAccordion faqs={faqs} />
       </div>
       <div id="contact">
         <Contact />

@@ -1,20 +1,30 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { portfolioItems } from '@/app/data/portfolioData'
 import Button from '@/app/components/ui/Button'
 import SectionHeader from '@/app/components/ui/SectionHeader'
-import { tabs } from '@/app/data/tabs'
+import { PortfolioItem } from '@/app/types/portfolio'
 
-export default function PortfolioSection() {
+interface PortfolioSectionProps {
+  items: PortfolioItem[]
+}
+
+export default function PortfolioSection({ items }: PortfolioSectionProps) {
   const [activeTab, setActiveTab] = useState('All')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  // Close dropdown when clicking outside
+  // Dynamically derive tabs from Sanity portfolio categories
+  const categories = useMemo(() => {
+    const extracted = Array.from(
+      new Set(items.map((i) => i.category).filter(Boolean)),
+    )
+    return ['All', ...extracted]
+  }, [items])
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -30,8 +40,8 @@ export default function PortfolioSection() {
 
   const filteredItems =
     activeTab === 'All'
-      ? portfolioItems
-      : portfolioItems.filter((item) => item.category === activeTab)
+      ? items
+      : items.filter((item) => item.category === activeTab)
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -58,7 +68,6 @@ export default function PortfolioSection() {
           />
         </div>
 
-        {/* Navigation Arrows using reusable Button component */}
         <div className="hidden sm:flex items-center gap-2 mb-12 sm:mb-16">
           <Button
             variant="secondary"
@@ -79,7 +88,6 @@ export default function PortfolioSection() {
         </div>
       </div>
 
-      {/* Dynamic Tabs Filter: Professional Dropdown on Mobile, Flex/Pills on Desktop */}
       <div className="mb-10 max-w-4xl mx-auto">
         {/* Mobile Dropdown Select */}
         <div className="relative sm:hidden" ref={dropdownRef}>
@@ -113,7 +121,7 @@ export default function PortfolioSection() {
 
           {dropdownOpen && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-card-bg border border-card-border rounded-xl shadow-xl z-50 overflow-hidden py-2 divide-y divide-gray-800/60 animate-in fade-in slide-in-from-top-2 duration-200">
-              {tabs.map((tab) => {
+              {categories.map((tab) => {
                 const isActive = activeTab === tab
                 return (
                   <button
@@ -138,9 +146,9 @@ export default function PortfolioSection() {
           )}
         </div>
 
-        {/* Desktop Flex Pills Filter */}
+        {/* Desktop Flex Pills */}
         <div className="hidden sm:flex flex-wrap justify-center gap-2">
-          {tabs.map((tab) => {
+          {categories.map((tab) => {
             const isActive = activeTab === tab
             return (
               <Button
@@ -160,7 +168,6 @@ export default function PortfolioSection() {
         </div>
       </div>
 
-      {/* Horizontal Scrollable Portfolio Container */}
       <div className="relative max-w-7xl mx-auto">
         <div
           ref={scrollContainerRef}
@@ -169,17 +176,18 @@ export default function PortfolioSection() {
         >
           {filteredItems.map((item) => (
             <div
-              key={item.id}
+              key={item._id}
               className="relative group rounded-xl overflow-hidden bg-card-bg border border-card-border shrink-0 w-[85%] sm:w-[45%] lg:w-[calc(20%-13px)] aspect-4/3 sm:aspect-square snap-start"
             >
-              <Image
-                src={item.image}
-                alt={item.title}
-                fill
-                sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 20vw"
-                className="object-cover group-hover:scale-110 transition duration-500 ease-out"
-              />
-              {/* Overlay */}
+              {item.image && (
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 20vw"
+                  className="object-cover group-hover:scale-110 transition duration-500 ease-out"
+                />
+              )}
               <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                 <span className="text-[10px] uppercase font-bold text-primary tracking-widest">
                   {item.category}
@@ -187,15 +195,23 @@ export default function PortfolioSection() {
                 <h3 className="text-sm font-bold text-foreground mt-0.5">
                   {item.title}
                 </h3>
-                <span className="text-xs font-semibold text-muted mt-2 flex items-center gap-1">
-                  View Project →
-                </span>
+                {item.link ? (
+                  <Link
+                    href={item.link}
+                    className="text-xs font-semibold text-muted mt-2 flex items-center gap-1 hover:text-primary"
+                  >
+                    View Project →
+                  </Link>
+                ) : (
+                  <span className="text-xs font-semibold text-muted mt-2 flex items-center gap-1">
+                    View Project →
+                  </span>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Mobile Navigation Controls */}
         <div className="flex sm:hidden justify-center items-center gap-4 mt-6">
           <Button
             variant="secondary"

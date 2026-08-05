@@ -1,11 +1,16 @@
 'use client'
 
-import { faqsData } from '@/app/data/faqs'
 import { useState } from 'react'
+import { PortableText } from '@portabletext/react'
 import ScrollReveal from '@/app/components/ScrollReveal'
 import SectionHeader from '@/app/components/ui/SectionHeader'
+import { FaqItem } from '@/app/types/faq'
 
-export default function FaqAccordion() {
+interface FaqAccordionProps {
+  faqs: FaqItem[]
+}
+
+export default function FaqAccordion({ faqs }: FaqAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
@@ -14,7 +19,6 @@ export default function FaqAccordion() {
       className="bg-surface-white py-12 px-4 sm:px-8 md:px-12 lg:px-16 border-b border-surface-white-border"
     >
       <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
-        {/* Guarantee Banner */}
         <ScrollReveal variant="scaleUp">
           <div className="bg-surface-white-muted p-4 rounded-lg border border-surface-white-border hover:border-primary/60 hover:shadow-xl transition-all duration-300 text-center space-y-2 shadow-sm">
             <SectionHeader
@@ -31,7 +35,6 @@ export default function FaqAccordion() {
           </div>
         </ScrollReveal>
 
-        {/* FAQ Area */}
         <div className="space-y-4">
           <ScrollReveal variant="fadeIn">
             <div className="text-center space-y-2 mb-8">
@@ -46,15 +49,18 @@ export default function FaqAccordion() {
 
           <ScrollReveal variant="slideUp" delay={150}>
             <div className="bg-surface-white-muted rounded-2xl overflow-hidden divide-y divide-surface-white-border shadow-sm">
-              {faqsData.map((faq, idx) => {
+              {faqs.map((faq, idx) => {
                 const isOpen = openIndex === idx
                 return (
-                  <div key={idx} className="bg-surface-white transition-colors">
+                  <div
+                    key={faq._id}
+                    className="bg-surface-white transition-colors"
+                  >
                     <button
                       onClick={() => setOpenIndex(isOpen ? null : idx)}
                       className="w-full flex items-center justify-between p-5 text-left font-bold text-sm md:text-base text-secondary hover:bg-surface-white-muted transition-colors focus:outline-none cursor-pointer"
                     >
-                      <span>{faq.q}</span>
+                      <span>{faq.question}</span>
                       <svg
                         className={`w-5 h-5 text-muted shrink-0 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                         fill="none"
@@ -78,7 +84,11 @@ export default function FaqAccordion() {
                       }`}
                     >
                       <div className="p-5 font-sans text-sm text-secondary/70 leading-relaxed bg-surface-white-muted">
-                        {faq.a}
+                        {Array.isArray(faq.answer) ? (
+                          <PortableText value={faq.answer} />
+                        ) : (
+                          faq.answer
+                        )}
                       </div>
                     </div>
                   </div>

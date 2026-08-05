@@ -1,12 +1,18 @@
 'use client'
 
-import { testimonials } from '@/app/data/testimonials'
 import Image from 'next/image'
 import Link from 'next/link'
 import SectionHeader from '@/app/components/ui/SectionHeader'
 import Button from '@/app/components/ui/Button'
+import { TestimonialItem } from '@/app/types/testimonial'
 
-export default function TestimonialsSection() {
+interface TestimonialsSectionProps {
+  testimonials: TestimonialItem[]
+}
+
+export default function TestimonialsSection({
+  testimonials,
+}: TestimonialsSectionProps) {
   const doubleTestimonials = [...testimonials, ...testimonials]
 
   return (
@@ -36,17 +42,14 @@ export default function TestimonialsSection() {
           lightMode={true}
         />
 
-        {/* Dynamic Infinite Track Window Wrapper */}
         <div className="relative w-full flex items-center py-4">
-          {/* Fading Edge Vignette Overlays */}
           <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-linear-to-r from-surface-white to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-linear-to-l from-surface-white to-transparent z-10 pointer-events-none" />
 
-          {/* Smooth Hardware-Accelerated Sliding Row Container */}
           <div className="flex gap-6 w-max animate-marquee whitespace-nowrap px-4">
             {doubleTestimonials.map((item, idx) => (
               <div
-                key={idx}
+                key={`${item._id}-${idx}`}
                 className="w-72 sm:w-80 bg-surface-white-muted p-6 sm:p-8 rounded-2xl border border-surface-white-border shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 transform hover:-translate-y-1 flex flex-col justify-between shrink-0 select-none"
               >
                 <div className="space-y-4 whitespace-normal">
@@ -85,7 +88,6 @@ export default function TestimonialsSection() {
           </div>
         </div>
 
-        {/* Bottom Call-To-Action Link */}
         <div className="text-center pt-4">
           <Link href="#testimonials" className="inline-block">
             <Button
