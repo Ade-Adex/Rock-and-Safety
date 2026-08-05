@@ -27,6 +27,9 @@ export interface PostItem {
   description: string
   imageUrl: string
   date: string
+  isFeatured?: boolean
+  isLatest?: boolean
+  views?: number
   category: string
   author?: PostAuthor
   readingTime?: string
@@ -34,4 +37,12 @@ export interface PostItem {
   body?: PortableTextBlock[]
   tableOfContents?: TocItem[]
   relatedArticles?: RelatedPostSummary[]
+}
+
+export interface PostFilterOptions {
+  category?: string
+  tag?: string
+  isFeatured?: boolean
+  isLatest?: boolean
+  limit?: number
 }

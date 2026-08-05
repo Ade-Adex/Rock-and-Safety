@@ -32,6 +32,24 @@ export const postType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'isFeatured',
+      title: 'Featured Post?',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'isLatest',
+      title: 'Mark as Latest/Trending Pin',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'views',
+      title: 'View Count',
+      type: 'number',
+      initialValue: 0,
+    }),
+    defineField({
       name: 'category',
       title: 'Category',
       type: 'string',
