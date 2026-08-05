@@ -11,8 +11,11 @@ interface TestimonialsSectionProps {
 }
 
 export default function TestimonialsSection({
-  testimonials,
+  testimonials = [],
 }: TestimonialsSectionProps) {
+  if (!testimonials || testimonials.length === 0) return null
+
+  // Duplicate items for continuous marquee loop
   const doubleTestimonials = [...testimonials, ...testimonials]
 
   return (
@@ -68,13 +71,19 @@ export default function TestimonialsSection({
 
                 <div className="flex items-center space-x-3 pt-4 mt-6 border-t border-surface-white-border">
                   <div className="w-10 h-10 rounded-full bg-card-bg overflow-hidden relative shrink-0 border border-surface-white-border">
-                    <Image
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb"
-                      alt={item.name}
-                      fill
-                      sizes="40px"
-                      className="object-cover"
-                    />
+                    {item.imageUrl ? (
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        sizes="40px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center font-bold text-primary text-xs bg-primary/10">
+                        {item.name ? item.name.charAt(0) : '?'}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <h4 className="font-bold text-sm leading-none text-secondary/80">

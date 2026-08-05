@@ -24,5 +24,20 @@ export const teamType = defineType({
       options: { hotspot: true },
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'order',
+      title: 'Display Order',
+      type: 'number',
+      description:
+        'Numeric order for displaying members (1 comes first, 2 comes second, etc.)',
+      initialValue: 0,
+    }),
+  ],
+  orderings: [
+    {
+      title: 'Display Order',
+      name: 'orderAsc',
+      by: [{ field: 'order', direction: 'asc' }],
+    },
   ],
 })

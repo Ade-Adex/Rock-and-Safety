@@ -153,16 +153,17 @@ export async function fetchStats(): Promise<StatItem[]> {
 }
 
 export async function fetchTeam(): Promise<TeamMember[]> {
-  const query = `*[_type == "teamMember"] {
+  const query = `*[_type == "teamMember"] | order(order asc) {
     _id,
     name,
     role,
-    "imageUrl": image.asset->url
+    "imageUrl": image.asset->url,
+    order
   }`
   return await client.fetch<TeamMember[]>(
     query,
     {},
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 0 } },
   )
 }
 
@@ -171,11 +172,12 @@ export async function fetchTestimonials(): Promise<TestimonialItem[]> {
     _id,
     name,
     title,
+    "imageUrl": image.asset->url,
     quote
   }`
   return await client.fetch<TestimonialItem[]>(
     query,
     {},
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 0 } },
   )
 }

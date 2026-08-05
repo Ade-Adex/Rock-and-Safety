@@ -15,7 +15,14 @@ export const testimonialType = defineType({
       name: 'title',
       title: 'Title / Role',
       type: 'string',
+      description: 'e.g., "CEO at TechCorp" or "Product Designer"',
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'image',
+      title: 'Avatar / Profile Image',
+      type: 'image',
+      options: { hotspot: true },
     }),
     defineField({
       name: 'quote',
