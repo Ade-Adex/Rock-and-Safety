@@ -31,5 +31,57 @@ export const postType = defineType({
       type: 'date',
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'category',
+      title: 'Category',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Digital Marketing', value: 'Digital Marketing' },
+          { title: 'Web Development', value: 'Web Development' },
+          { title: 'Branding & Design', value: 'Branding & Design' },
+          { title: 'Publishing', value: 'Publishing' },
+          { title: 'Business Strategy', value: 'Business Strategy' },
+        ],
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'author',
+      title: 'Author',
+      type: 'reference',
+      to: [{ type: 'teamMember' }],
+    }),
+    defineField({
+      name: 'readingTime',
+      title: 'Reading Time (e.g., "5 min read")',
+      type: 'string',
+    }),
+    defineField({
+      name: 'tags',
+      title: 'Tags',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: {
+        layout: 'tags',
+      },
+    }),
+    defineField({
+      name: 'body',
+      title: 'Body Content',
+      type: 'array',
+      of: [{ type: 'block' }, { type: 'image' }],
+    }),
+    defineField({
+      name: 'relatedArticles',
+      title: 'Related Articles',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'post' }],
+        },
+      ],
+    }),
   ],
 })

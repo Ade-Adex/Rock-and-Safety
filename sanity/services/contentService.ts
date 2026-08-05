@@ -41,7 +41,29 @@ export async function fetchPosts(): Promise<PostItem[]> {
     title,
     description,
     "imageUrl": image.asset->url,
-    date
+    date,
+    category,
+    readingTime,
+    tags,
+    body,
+    "tableOfContents": body[style in ["h1", "h2", "h3", "h4"]] {
+      "id": _key,
+      "text": children[0].text,
+      "level": style
+    },
+    author->{
+      _id,
+      name,
+      role,
+      "imageUrl": image.asset->url
+    },
+    relatedArticles[]->{
+      _id,
+      title,
+      description,
+      "imageUrl": image.asset->url,
+      date
+    }
   }`
   return await client.fetch<PostItem[]>(
     query,
