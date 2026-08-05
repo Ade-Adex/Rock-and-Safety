@@ -5,9 +5,9 @@ export const services = [
     desc: 'Facebook Ads, Instagram Ads, Google Ads, Lead Generation, and Marketing Strategies that drive real ROI.',
   },
   {
-    title: 'Web Design',
+    title: 'Web Development',
     icon: '💻',
-    desc: 'Modern, responsive, and high-converting websites built to connect with your target customers.',
+    desc: 'Modern, responsive websites and web applications built with the latest technologies for optimal performance and user experience.',
   },
   {
     title: 'UI/UX Design',

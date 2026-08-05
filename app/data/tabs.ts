@@ -1,6 +1,6 @@
 export  const tabs = [
     'All',
-    'Web Design',
+    'Web Development',
     'Branding',
     'UI/UX Design',
     'Marketing',

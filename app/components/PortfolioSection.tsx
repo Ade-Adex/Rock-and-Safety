@@ -217,7 +217,7 @@ export default function PortfolioSection() {
       </div>
 
       <div className="text-center mt-12">
-        <Link href="#portfolio" className="inline-block">
+        <Link href="/projects" className="inline-block">
           <Button variant="outline">VIEW ALL PROJECTS →</Button>
         </Link>
       </div>

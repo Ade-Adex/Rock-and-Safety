@@ -7,6 +7,18 @@ export interface FaqItem {
 
 export const faqsData: FaqItem[] = [
   {
+    q: 'What is Rock and Safety Marketing Hub?',
+    a: 'Rock and Safety Marketing Hub is a digital marketing and business growth agency dedicated to helping businesses, entrepreneurs, and authors build a strong online presence through strategic marketing, creative design, and publishing solutions.',
+  },
+  {
+    q: 'What services do you offer?',
+    a: 'We offer a wide range of services, including website design, SEO, social media marketing, paid advertising, branding, content creation, AI-powered marketing, blog publishing, business consulting, book publishing, and eBook development.',
+  },
+  {
+    q: 'Do you provide book publishing services?',
+    a: 'Yes. We help authors publish both print books and eBooks. Our services include manuscript formatting, cover design, eBook conversion (PDF, EPUB, and Kindle formats), publishing assistance, author branding, and book launch support.',
+  },
+  {
     q: 'How do I make payment — both locally and internationally?',
     a: (
       <div className="space-y-3">
@@ -16,7 +28,7 @@ export const faqsData: FaqItem[] = [
         </p>
         <ul className="space-y-1.5 pl-2 list-none">
           <li>
-            💳 <strong>Card Payment</strong> (via Paystack or Flutterwave)
+            💳 <strong>Card Payment</strong> (via Paystack)
           </li>
           <li>
             💸 <strong>PayPal</strong>
@@ -24,43 +36,28 @@ export const faqsData: FaqItem[] = [
           <li>
             💼 <strong>Payoneer</strong>
           </li>
-          <li>
-            🪙 <strong>USDT (Preferred)</strong> and BTC
-          </li>
-          <li>
-            💻 <strong>Fiverr or Upwork</strong> (if you prefer a freelancing
-            platform)
-          </li>
         </ul>
-        <p className="text-xs text-slate-400 italic">
+        {/* <p className="text-xs text-slate-400 italic">
           For speed and convenience, USDT is most preferred, but we&apos;ll
           guide you through whichever option works best for you.
-        </p>
+        </p> */}
       </div>
     ),
   },
   {
-    q: 'How long will it take to build my page?',
-    a: 'Typically, a standard project takes between 5 to 10 business days depending on responsiveness, feedback speed, and copy complexity.',
+    q: 'Can you help promote my book after it is published?',
+    a: 'Absolutely. We provide book marketing services such as social media promotion, email marketing, landing page creation, SEO, paid advertising, author branding, and launch campaigns to help your book reach a wider audience and increase sales.',
   },
   {
-    q: 'What if I don’t have my content or product ready yet?',
-    a: 'Don’t worry! We can assist you in structuring your core concept, value offerings, and write complete layout copywriting from scratch.',
+    q: 'Who can benefit from your services?',
+    a: 'Our services are designed for startups, small and medium-sized businesses, entrepreneurs, authors, churches, healthcare providers, educational institutions, nonprofits, and organizations seeking sustainable business growth.',
   },
   {
-    q: 'Can I make changes to the page after delivery?',
-    a: 'Yes. All packages include standard post-delivery revision rounds to ensure things align perfectly with your standards.',
+    q: 'Do you create content for websites and blogs?',
+    a: 'Yes. We produce professional, SEO-optimized content for websites and blogs, including articles, service pages, product descriptions, and educational resources that improve search rankings, attract visitors, and establish your brand as an authority.',
   },
   {
-    q: 'Will you run the ads for me too?',
-    a: 'We focus purely on page generation and conversion framework setups, but we can instantly connect you directly with our trusted Facebook Ads specialist.',
-  },
-  {
-    q: 'What platform will my page be built on?',
-    a: 'Depending on your needs, we work across Systeme.io, WordPress, Elementor, or Wix.',
-  },
-  {
-    q: 'What if I’m not satisfied with the page?',
-    a: 'We offer a 100% Satisfaction Guarantee. We will make revisions to fix any issues, or issue an equitable refund based on the context.',
+    q: 'How do I get started with Rock and Safety Marketing Hub?',
+    a: `Getting started is easy. Contact us through our website, email, WhatsApp, or social media to discuss your project. We'll understand your goals, recommend the best solution, provide a customized quote, and support you from start to finish.`,
   },
 ]
