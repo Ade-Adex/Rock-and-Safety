@@ -42,6 +42,7 @@ export interface PostItem {
   isFeatured?: boolean
   isLatest?: boolean
   views?: number
+  commentCount?: number
   category?: string
   author?: PostAuthor
   readingTime?: string
@@ -51,6 +52,11 @@ export interface PostItem {
   body?: PortableTextBlock[]
   tableOfContents?: TocItem[]
   relatedArticles?: RelatedPostSummary[]
+}
+
+export interface CategoryCount {
+  name: string
+  count: number
 }
 
 export interface PostFilterOptions {

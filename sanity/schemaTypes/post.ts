@@ -23,7 +23,7 @@ export const postType = defineType({
       title: 'Excerpt / Summary',
       type: 'text',
       rows: 3,
-      validation: (Rule) => Rule.max(200),
+      validation: (Rule) => Rule.max(250),
     }),
     defineField({
       name: 'category',
@@ -45,8 +45,15 @@ export const postType = defineType({
     }),
     defineField({
       name: 'readingTime',
-      title: 'Reading Time (e.g. 5 min read)',
+      title: 'Reading Time (e.g. 7 min read)',
       type: 'string',
+      initialValue: '5 min read',
+    }),
+    defineField({
+      name: 'commentCount',
+      title: 'Comment Count',
+      type: 'number',
+      initialValue: 0,
     }),
     defineField({
       name: 'isFeatured',
