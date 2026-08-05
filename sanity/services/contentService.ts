@@ -7,7 +7,6 @@ import { StatItem } from '@/app/types/stat'
 import { TeamMember } from '@/app/types/team'
 import { TestimonialItem } from '@/app/types/testimonial'
 
-
 export interface PortfolioFilterOptions {
   category?: string
   sort?: 'latest' | 'oldest' | 'title'
@@ -16,15 +15,24 @@ export interface PortfolioFilterOptions {
 const POST_FIELDS = `
   _id,
   title,
+  "slug": coalesce(slug.current, _id),
   description,
   "imageUrl": image.asset->url,
-  date,
+  "date": coalesce(publishedAt, _createdAt),
+  publishedAt,
+  "_updatedAt": _updatedAt,
   isFeatured,
   isLatest,
   views,
   category,
   readingTime,
   tags,
+  canonicalUrl,
+  seo {
+    metaTitle,
+    metaDescription,
+    "shareImage": shareImage.asset->url
+  },
   body,
   "tableOfContents": body[style in ["h1", "h2", "h3", "h4"]] {
     "id": _key,
@@ -40,11 +48,56 @@ const POST_FIELDS = `
   relatedArticles[]->{
     _id,
     title,
+    "slug": coalesce(slug.current, _id),
     description,
     "imageUrl": image.asset->url,
-    date
+    "date": coalesce(publishedAt, _createdAt),
+    category
   }
 `
+
+export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
+  const query = `*[_type == "post" && (slug.current == $slug || _id == $slug) && !(_id in path("drafts.**"))][0] {
+    ${POST_FIELDS}
+  }`
+  return await client.fetch<PostItem | null>(
+    query,
+    { slug },
+    { next: { revalidate: 0 } },
+  )
+}
+
+export async function fetchFilteredPosts(
+  options: PostFilterOptions = {},
+): Promise<PostItem[]> {
+  const { category, tag, search, sort = 'latest', limit = 20 } = options
+
+  const conditions: string[] = ['_type == "post"']
+
+  if (category && category !== 'All') {
+    conditions.push(`lower(category) == "${category.toLowerCase()}"`)
+  }
+  if (tag) {
+    conditions.push(`"${tag}" in tags`)
+  }
+  if (search) {
+    conditions.push(`[title, description] match "*${search}*"`)
+  }
+
+  const whereClause = conditions.join(' && ')
+  const orderClause =
+    sort === 'oldest' ? '| order(date asc)' : '| order(date desc)'
+
+  const query = `*[${whereClause}] ${orderClause}[0...$limit] {
+    ${POST_FIELDS}
+  }`
+
+  return await client.fetch<PostItem[]>(
+    query,
+    { limit },
+    { next: { revalidate: 0 } },
+  )
+}
 
 export async function fetchFaqs(): Promise<FaqItem[]> {
   const query = `*[_type == "faq"] {
@@ -52,11 +105,7 @@ export async function fetchFaqs(): Promise<FaqItem[]> {
     question,
     answer
   }`
-  return await client.fetch<FaqItem[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
+  return await client.fetch<FaqItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchPortfolio(
@@ -72,7 +121,6 @@ export async function fetchPortfolio(
 
   const whereClause = conditions.join(' && ')
 
-  // Define sorting logic
   let orderClause = '| order(_createdAt desc)'
   if (sort === 'oldest') orderClause = '| order(_createdAt asc)'
   if (sort === 'title') orderClause = '| order(title asc)'
@@ -97,11 +145,7 @@ export async function fetchPosts(): Promise<PostItem[]> {
   const query = `*[_type == "post"] | order(date desc) {
     ${POST_FIELDS}
   }`
-  return await client.fetch<PostItem[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
+  return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
@@ -119,35 +163,7 @@ export async function fetchFeaturedPosts(): Promise<PostItem[]> {
   const query = `*[_type == "post" && isFeatured == true] | order(date desc) {
     ${POST_FIELDS}
   }`
-  return await client.fetch<PostItem[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
-}
-
-export async function fetchFilteredPosts(
-  options: PostFilterOptions = {},
-): Promise<PostItem[]> {
-  const { category, tag, isFeatured, isLatest, limit = 10 } = options
-
-  const conditions: string[] = ['_type == "post"']
-
-  if (category) conditions.push(`category == "${category}"`)
-  if (tag) conditions.push(`"${tag}" in tags`)
-  if (isFeatured !== undefined) conditions.push(`isFeatured == ${isFeatured}`)
-  if (isLatest !== undefined) conditions.push(`isLatest == ${isLatest}`)
-
-  const whereClause = conditions.join(' && ')
-  const query = `*[${whereClause}] | order(date desc)[0...$limit] {
-    ${POST_FIELDS}
-  }`
-
-  return await client.fetch<PostItem[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
+  return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchServices(): Promise<ServiceItem[]> {
@@ -170,11 +186,7 @@ export async function fetchStats(): Promise<StatItem[]> {
     value,
     label
   }`
-  return await client.fetch<StatItem[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
+  return await client.fetch<StatItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchTeam(): Promise<TeamMember[]> {

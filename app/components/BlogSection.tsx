@@ -1,8 +1,8 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import SectionHeader from '@/app/components/ui/SectionHeader'
+import BlogCard from '@/app/components/blog/BlogCard'
 import { PostItem } from '@/app/types/post'
 
 interface BlogSectionProps {
@@ -31,47 +31,7 @@ export default function BlogSection({ posts }: BlogSectionProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 max-w-6xl mx-auto">
         {posts.map((post) => (
-          <article
-            key={post._id}
-            className="group bg-dark rounded-2xl overflow-hidden border border-card-border shadow-sm hover:shadow-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
-          >
-            <div>
-              <div className="relative w-full aspect-16/10 overflow-hidden">
-                {post.imageUrl ? (
-                  <Image
-                    src={post.imageUrl}
-                    alt={post.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition duration-500"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-card-border flex items-center justify-center text-muted">
-                    No Image
-                  </div>
-                )}
-              </div>
-              <div className="p-6">
-                <span className="text-xs text-muted font-medium">
-                  {post.date}
-                </span>
-                <h3 className="font-bold text-base mt-2 leading-snug text-foreground group-hover:text-primary transition-colors">
-                  {post.title}
-                </h3>
-              </div>
-            </div>
-            <div className="px-6 pb-6">
-              <Link
-                href="/blog"
-                className="text-xs font-extrabold text-primary inline-flex items-center space-x-1 uppercase"
-              >
-                <span>READ MORE</span>
-                <span className="transition-transform group-hover:translate-x-1">
-                  →
-                </span>
-              </Link>
-            </div>
-          </article>
+          <BlogCard key={post._id} post={post} />
         ))}
       </div>
     </section>
