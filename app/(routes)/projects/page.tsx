@@ -9,28 +9,42 @@ interface ProjectsPageProps {
   searchParams: Promise<{
     category?: string
     service?: string
+    sort?: 'latest' | 'oldest' | 'title'
   }>
 }
+
+const CATEGORIES = [
+  'All',
+  'Web Development',
+  'Branding',
+  'UI/UX Design',
+  'Marketing',
+  'Publishing',
+]
 
 export default async function ProjectDetailsPage({
   searchParams,
 }: ProjectsPageProps) {
-  // Await searchParams in Next.js Server Components
   const resolvedParams = await searchParams
   const categoryQuery = resolvedParams.category || 'All'
   const serviceTitle = resolvedParams.service || 'Service'
+  const sortQuery = resolvedParams.sort || 'latest'
 
-  // Fetch live portfolio data from Sanity
-  const allProjects: PortfolioItem[] = await fetchPortfolio()
+  // Fetch filtered & sorted portfolio data straight from Sanity GROQ
+  const relatedProjects: PortfolioItem[] = await fetchPortfolio({
+    category: categoryQuery,
+    sort: sortQuery,
+  })
 
-  // Filter projects matching selected category
-  const relatedProjects =
-    categoryQuery === 'All'
-      ? allProjects
-      : allProjects.filter(
-          (item) =>
-            item.category?.toLowerCase() === categoryQuery.toLowerCase(),
-        )
+  // Helper to build URL search params safely
+  const createFilterUrl = (newCategory?: string, newSort?: string) => {
+    const params = new URLSearchParams()
+    if (serviceTitle && serviceTitle !== 'Service')
+      params.set('service', serviceTitle)
+    params.set('category', newCategory ?? categoryQuery)
+    params.set('sort', newSort ?? sortQuery)
+    return `?${params.toString()}`
+  }
 
   return (
     <main className="bg-dark min-h-screen text-foreground py-16 px-4 sm:px-8 md:px-12 lg:px-16">
@@ -51,13 +65,64 @@ export default async function ProjectDetailsPage({
           centered={false}
         />
 
-        <p className="text-muted text-sm sm:text-base max-w-3xl -mt-6 mb-12 leading-relaxed">
+        {/* Filter & Sort Controls Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 my-8 pb-6 border-b border-card-border">
+          {/* Category Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+            {CATEGORIES.map((cat) => {
+              const isActive = categoryQuery.toLowerCase() === cat.toLowerCase()
+              return (
+                <Link key={cat} href={createFilterUrl(cat, sortQuery)}>
+                  <span
+                    className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                      isActive
+                        ? 'bg-primary text-black'
+                        : 'bg-card-bg text-muted hover:text-foreground border border-card-border'
+                    }`}
+                  >
+                    {cat}
+                  </span>
+                </Link>
+              )
+            })}
+          </div>
+
+          {/* Sort Dropdown / Links */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-xs text-muted font-medium">Sort by:</span>
+            <div className="flex bg-card-bg border border-card-border rounded-lg p-1">
+              <Link
+                href={createFilterUrl(categoryQuery, 'latest')}
+                className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${
+                  sortQuery === 'latest'
+                    ? 'bg-primary/20 text-primary'
+                    : 'text-muted hover:text-foreground'
+                }`}
+              >
+                Latest
+              </Link>
+              <Link
+                href={createFilterUrl(categoryQuery, 'oldest')}
+                className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${
+                  sortQuery === 'oldest'
+                    ? 'bg-primary/20 text-primary'
+                    : 'text-muted hover:text-foreground'
+                }`}
+              >
+                Oldest
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-muted text-sm sm:text-base max-w-3xl mb-8 leading-relaxed">
           Showing {relatedProjects.length} portfolio item
           {relatedProjects.length !== 1 ? 's' : ''} under the{' '}
           <span className="text-accent-gold font-semibold">
             {categoryQuery}
           </span>{' '}
-          category.
+          category sorted by{' '}
+          <span className="text-primary font-semibold">{sortQuery}</span>.
         </p>
 
         {/* Projects Grid */}
@@ -119,11 +184,11 @@ export default async function ProjectDetailsPage({
         ) : (
           <div className="text-center py-16 bg-card-bg rounded-2xl border border-card-border">
             <p className="text-muted text-base">
-              No specific portfolio items found for this service yet.
+              No portfolio items found matching your filter selection.
             </p>
             <div className="mt-6">
-              <Link href="/#services">
-                <Button variant="primary">VIEW OTHER SERVICES</Button>
+              <Link href={createFilterUrl('All', 'latest')}>
+                <Button variant="primary">RESET FILTERS</Button>
               </Link>
             </div>
           </div>

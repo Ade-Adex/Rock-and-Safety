@@ -97,7 +97,7 @@ export default function TestimonialsSection({
           </div>
         </div>
 
-        <div className="text-center pt-4">
+        {/* <div className="text-center pt-4">
           <Link href="#testimonials" className="inline-block">
             <Button
               variant="outline"
@@ -106,7 +106,7 @@ export default function TestimonialsSection({
               VIEW ALL REVIEWS →
             </Button>
           </Link>
-        </div>
+        </div> */}
       </div>
     </section>
   )

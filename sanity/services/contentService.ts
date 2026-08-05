@@ -7,6 +7,12 @@ import { StatItem } from '@/app/types/stat'
 import { TeamMember } from '@/app/types/team'
 import { TestimonialItem } from '@/app/types/testimonial'
 
+
+export interface PortfolioFilterOptions {
+  category?: string
+  sort?: 'latest' | 'oldest' | 'title'
+}
+
 const POST_FIELDS = `
   _id,
   title,
@@ -49,22 +55,41 @@ export async function fetchFaqs(): Promise<FaqItem[]> {
   return await client.fetch<FaqItem[]>(
     query,
     {},
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 0 } },
   )
 }
 
-export async function fetchPortfolio(): Promise<PortfolioItem[]> {
-  const query = `*[_type == "portfolio"] {
+export async function fetchPortfolio(
+  options: PortfolioFilterOptions = {},
+): Promise<PortfolioItem[]> {
+  const { category, sort = 'latest' } = options
+
+  const conditions: string[] = ['_type == "portfolio"']
+
+  if (category && category !== 'All') {
+    conditions.push(`lower(category) == "${category.toLowerCase()}"`)
+  }
+
+  const whereClause = conditions.join(' && ')
+
+  // Define sorting logic
+  let orderClause = '| order(_createdAt desc)'
+  if (sort === 'oldest') orderClause = '| order(_createdAt asc)'
+  if (sort === 'title') orderClause = '| order(title asc)'
+
+  const query = `*[${whereClause}] ${orderClause} {
     _id,
     title,
     category,
     "image": image.asset->url,
-    link
+    link,
+    _createdAt
   }`
+
   return await client.fetch<PortfolioItem[]>(
     query,
     {},
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 0 } },
   )
 }
 
@@ -75,7 +100,7 @@ export async function fetchPosts(): Promise<PostItem[]> {
   return await client.fetch<PostItem[]>(
     query,
     {},
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 0 } },
   )
 }
 
@@ -86,7 +111,7 @@ export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
   return await client.fetch<PostItem[]>(
     query,
     { limit },
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 0 } },
   )
 }
 
@@ -97,7 +122,7 @@ export async function fetchFeaturedPosts(): Promise<PostItem[]> {
   return await client.fetch<PostItem[]>(
     query,
     {},
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 0 } },
   )
 }
 
@@ -121,7 +146,7 @@ export async function fetchFilteredPosts(
   return await client.fetch<PostItem[]>(
     query,
     {},
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 0 } },
   )
 }
 
@@ -135,7 +160,7 @@ export async function fetchServices(): Promise<ServiceItem[]> {
   return await client.fetch<ServiceItem[]>(
     query,
     {},
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 0 } },
   )
 }
 
@@ -148,7 +173,7 @@ export async function fetchStats(): Promise<StatItem[]> {
   return await client.fetch<StatItem[]>(
     query,
     {},
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 0 } },
   )
 }
 
@@ -168,7 +193,7 @@ export async function fetchTeam(): Promise<TeamMember[]> {
 }
 
 export async function fetchTestimonials(): Promise<TestimonialItem[]> {
-  const query = `*[_type == "testimonial"] {
+  const query = `*[_type == "testimonial"] | order(_createdAt desc) {
     _id,
     name,
     title,
