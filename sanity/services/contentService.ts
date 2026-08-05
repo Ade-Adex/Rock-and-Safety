@@ -1,3 +1,4 @@
+import { groq } from 'next-sanity'
 import { client } from '@/sanity/lib/client'
 import { FaqItem } from '@/app/types/faq'
 import { PortfolioItem } from '@/app/types/portfolio'
@@ -12,54 +13,47 @@ export interface PortfolioFilterOptions {
   sort?: 'latest' | 'oldest' | 'title'
 }
 
-const POST_FIELDS = `
+const POST_FIELDS = groq`
   _id,
   title,
-  "slug": coalesce(slug.current, _id),
-  description,
-  "imageUrl": image.asset->url,
-  "date": coalesce(publishedAt, _createdAt),
+  "slug": slug.current,
   publishedAt,
-  "_updatedAt": _updatedAt,
-  isFeatured,
-  isLatest,
-  views,
-  commentCount,
-  category,
-  readingTime,
-  tags,
-  canonicalUrl,
-  seo {
-    metaTitle,
-    metaDescription,
-    "shareImage": shareImage.asset->url
+  "date": coalesce(publishedAt, _createdAt),
+  description,
+  "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
+  "category": category->title,
+  "author": author->{
+    name,
+    bio,
+    "imageUrl": image.asset->url
   },
-  body,
-  "tableOfContents": body[style in ["h1", "h2", "h3", "h4"]] {
+  readingTime,
+  commentCount,
+  canonicalUrl,
+  seo,
+  body[] {
+    ...,
+    _type == "block" => {
+      ...,
+      "id": _key
+    }
+  },
+  "tableOfContents": body[style in ["h1", "h2", "h3"]]{
     "id": _key,
     "text": children[0].text,
     "level": style
   },
-  author->{
-    _id,
-    name,
-    role,
-    bio,
-    "imageUrl": image.asset->url
-  },
-  relatedArticles[]->{
+  "relatedArticles": *[_type == "post" && references(^.category._ref) && _id != ^._id][0..1]{
     _id,
     title,
-    "slug": coalesce(slug.current, _id),
-    description,
-    "imageUrl": image.asset->url,
-    "date": coalesce(publishedAt, _createdAt),
-    category
+    "slug": slug.current,
+    "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
+    "date": coalesce(publishedAt, _createdAt)
   }
 `
 
 export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
-  const query = `*[_type == "post" && (slug.current == $slug || _id == $slug) && !(_id in path("drafts.**"))][0] {
+  const query = groq`*[_type == "post" && (slug.current == $slug || _id == $slug) && !(_id in path("drafts.**"))][0] {
     ${POST_FIELDS}
   }`
   return await client.fetch<PostItem | null>(
@@ -70,11 +64,11 @@ export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
 }
 
 export async function fetchRecentPosts(limit: number = 4): Promise<PostItem[]> {
-  const query = `*[_type == "post" && !(_id in path("drafts.**"))] | order(date desc)[0...$limit] {
+  const query = groq`*[_type == "post" && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc)[0...$limit] {
     _id,
     title,
     "slug": coalesce(slug.current, _id),
-    "imageUrl": image.asset->url,
+    "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
     "date": coalesce(publishedAt, _createdAt)
   }`
   return await client.fetch<PostItem[]>(
@@ -85,8 +79,8 @@ export async function fetchRecentPosts(limit: number = 4): Promise<PostItem[]> {
 }
 
 export async function fetchCategoryCounts(): Promise<CategoryCount[]> {
-  const query = `*[_type == "post" && defined(category)] {
-    category
+  const query = groq`*[_type == "post" && defined(category)] {
+    "category": coalesce(category->title, category)
   }`
   const posts = await client.fetch<{ category: string }[]>(
     query,
@@ -109,35 +103,42 @@ export async function fetchFilteredPosts(
 ): Promise<PostItem[]> {
   const { category, tag, search, sort = 'latest', limit = 20 } = options
 
-  const conditions: string[] = ['_type == "post"']
+  const conditions: string[] = [
+    '_type == "post"',
+    '!(_id in path("drafts.**"))',
+  ]
+  const params: Record<string, unknown> = { limit }
 
   if (category && category !== 'All') {
-    conditions.push(`lower(category) == "${category.toLowerCase()}"`)
+    conditions.push('lower(coalesce(category->title, category)) == $category')
+    params.category = category.toLowerCase()
   }
   if (tag) {
-    conditions.push(`"${tag}" in tags`)
+    conditions.push('$tag in tags')
+    params.tag = tag
   }
   if (search) {
-    conditions.push(`[title, description] match "*${search}*"`)
+    conditions.push('[title, description] match $search')
+    params.search = `*${search}*`
   }
 
   const whereClause = conditions.join(' && ')
   const orderClause =
-    sort === 'oldest' ? '| order(date asc)' : '| order(date desc)'
+    sort === 'oldest'
+      ? '| order(publishedAt asc, _createdAt asc)'
+      : '| order(publishedAt desc, _createdAt desc)'
 
-  const query = `*[${whereClause}] ${orderClause}[0...$limit] {
+  const query = groq`*[${whereClause}] ${orderClause}[0...$limit] {
     ${POST_FIELDS}
   }`
 
-  return await client.fetch<PostItem[]>(
-    query,
-    { limit },
-    { next: { revalidate: 0 } },
-  )
+  return await client.fetch<PostItem[]>(query, params, {
+    next: { revalidate: 0 },
+  })
 }
 
 export async function fetchFaqs(): Promise<FaqItem[]> {
-  const query = `*[_type == "faq"] { _id, question, answer }`
+  const query = groq`*[_type == "faq"] { _id, question, answer }`
   return await client.fetch<FaqItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
@@ -146,9 +147,11 @@ export async function fetchPortfolio(
 ): Promise<PortfolioItem[]> {
   const { category, sort = 'latest' } = options
   const conditions: string[] = ['_type == "portfolio"']
+  const params: Record<string, unknown> = {}
 
   if (category && category !== 'All') {
-    conditions.push(`lower(category) == "${category.toLowerCase()}"`)
+    conditions.push('lower(category) == $category')
+    params.category = category.toLowerCase()
   }
 
   const whereClause = conditions.join(' && ')
@@ -156,24 +159,22 @@ export async function fetchPortfolio(
   if (sort === 'oldest') orderClause = '| order(_createdAt asc)'
   if (sort === 'title') orderClause = '| order(title asc)'
 
-  const query = `*[${whereClause}] ${orderClause} {
+  const query = groq`*[${whereClause}] ${orderClause} {
     _id, title, category, "image": image.asset->url, link, _createdAt
   }`
 
-  return await client.fetch<PortfolioItem[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
+  return await client.fetch<PortfolioItem[]>(query, params, {
+    next: { revalidate: 0 },
+  })
 }
 
 export async function fetchPosts(): Promise<PostItem[]> {
-  const query = `*[_type == "post"] | order(date desc) { ${POST_FIELDS} }`
+  const query = groq`*[_type == "post" && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc) { ${POST_FIELDS} }`
   return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
-  const query = `*[_type == "post"] | order(date desc)[0...$limit] { ${POST_FIELDS} }`
+  const query = groq`*[_type == "post" && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc)[0...$limit] { ${POST_FIELDS} }`
   return await client.fetch<PostItem[]>(
     query,
     { limit },
@@ -182,12 +183,12 @@ export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
 }
 
 export async function fetchFeaturedPosts(): Promise<PostItem[]> {
-  const query = `*[_type == "post" && isFeatured == true] | order(date desc) { ${POST_FIELDS} }`
+  const query = groq`*[_type == "post" && isFeatured == true && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc) { ${POST_FIELDS} }`
   return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchServices(): Promise<ServiceItem[]> {
-  const query = `*[_type == "service"] { _id, title, icon, description }`
+  const query = groq`*[_type == "service"] { _id, title, icon, description }`
   return await client.fetch<ServiceItem[]>(
     query,
     {},
@@ -196,12 +197,12 @@ export async function fetchServices(): Promise<ServiceItem[]> {
 }
 
 export async function fetchStats(): Promise<StatItem[]> {
-  const query = `*[_type == "stat"] { _id, value, label }`
+  const query = groq`*[_type == "stat"] { _id, value, label }`
   return await client.fetch<StatItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchTeam(): Promise<TeamMember[]> {
-  const query = `*[_type == "teamMember"] | order(order asc) { _id, name, role, "imageUrl": image.asset->url, order }`
+  const query = groq`*[_type == "teamMember"] | order(order asc) { _id, name, role, "imageUrl": image.asset->url, order }`
   return await client.fetch<TeamMember[]>(
     query,
     {},
@@ -210,7 +211,7 @@ export async function fetchTeam(): Promise<TeamMember[]> {
 }
 
 export async function fetchTestimonials(): Promise<TestimonialItem[]> {
-  const query = `*[_type == "testimonial"] | order(_createdAt desc) { _id, name, title, "imageUrl": image.asset->url, quote }`
+  const query = groq`*[_type == "testimonial"] | order(_createdAt desc) { _id, name, title, "imageUrl": image.asset->url, quote }`
   return await client.fetch<TestimonialItem[]>(
     query,
     {},
