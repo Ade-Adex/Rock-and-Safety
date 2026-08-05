@@ -39,6 +39,8 @@ export async function fetchPosts(): Promise<PostItem[]> {
   const query = `*[_type == "post"] | order(date desc) {
     _id,
     title,
+    description,
+    "imageUrl": image.asset->url,
     date
   }`
   return await client.fetch<PostItem[]>(
