@@ -27,6 +27,7 @@ export default function LogoComponent({
           alt="Rock and Safety Logo"
           fill
           priority
+          sizes="(max-width: 640px) 48px, 56px"
           className="object-contain"
         />
       </div>

@@ -17,7 +17,7 @@ export default function BlogSidebar({
   return (
     <aside className="lg:col-span-4 space-y-8">
       {/* Search Widget */}
-      <div className="p-5 bg-card-bg rounded-2xl border border-card-border shadow-sm">
+      <div className="hidden lg:block p-5 bg-card-bg rounded-2xl border border-card-border shadow-sm">
         <form action="/blog" method="GET" className="flex items-center gap-2">
           <input
             type="text"
@@ -35,7 +35,7 @@ export default function BlogSidebar({
       </div>
 
       {/* Categories Widget */}
-      <div className="p-5 bg-card-bg rounded-2xl border border-card-border shadow-sm">
+      <div className="hidden lg:block p-5 bg-card-bg rounded-2xl border border-card-border shadow-sm">
         <h3 className="text-base font-bold text-foreground mb-4 pb-2 border-b border-card-border">
           Categories
         </h3>
@@ -132,10 +132,28 @@ export default function BlogSidebar({
             <li key={srv._id}>
               <Link
                 href="/services"
-                className="flex items-center gap-2 text-muted hover:text-primary transition-colors py-1"
+                className="flex items-center gap-2.5 text-muted hover:text-primary transition-colors py-1 group"
               >
-                <span className="text-primary">📄</span>
-                <span>{srv.title}</span>
+                {srv.icon ? (
+                  <span className="text-primary text-sm shrink-0">
+                    {srv.icon}
+                  </span>
+                ) : (
+                  <svg
+                    className="w-4 h-4 text-primary shrink-0 transition-transform group-hover:translate-x-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 12l2 2 4-4m6 2a9 9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                )}
+                <span className="truncate">{srv.title}</span>
               </Link>
             </li>
           ))}

@@ -1,11 +1,16 @@
 import { PortableTextBlock } from '@portabletext/types'
 
 export interface PostAuthor {
-  _id: string
+  _id?: string
   name: string
   role?: string
   imageUrl?: string
   bio?: string
+}
+
+export interface CategoryObject {
+  _id?: string
+  title?: string
 }
 
 export interface SeoMetadata {
@@ -21,7 +26,7 @@ export interface RelatedPostSummary {
   description?: string
   imageUrl?: string
   date?: string
-  category?: string
+  category?: string | CategoryObject
 }
 
 export interface TocItem {
@@ -43,8 +48,8 @@ export interface PostItem {
   isLatest?: boolean
   views?: number
   commentCount?: number
-  category?: string
-  author?: PostAuthor
+  category?: string | CategoryObject
+  author?: string | PostAuthor
   readingTime?: string
   tags?: string[]
   seo?: SeoMetadata

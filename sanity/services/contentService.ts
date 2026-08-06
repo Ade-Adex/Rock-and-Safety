@@ -21,11 +21,11 @@ const POST_FIELDS = groq`
   "date": coalesce(publishedAt, _createdAt),
   description,
   "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
-  "category": category->title,
-  "author": author->{
-    name,
-    bio,
-    "imageUrl": image.asset->url
+  "category": coalesce(category->title, category),
+  "author": {
+    "name": coalesce(author->name, author.name, "Rock and Safety Team"),
+    "bio": author->bio,
+    "imageUrl": coalesce(author->image.asset->url, author.imageUrl)
   },
   readingTime,
   commentCount,
@@ -43,7 +43,7 @@ const POST_FIELDS = groq`
     "text": children[0].text,
     "level": style
   },
-  "relatedArticles": *[_type == "post" && references(^.category._ref) && _id != ^._id][0..1]{
+  "relatedArticles": *[_type == "post" && category == ^.category && _id != ^._id][0..1]{
     _id,
     title,
     "slug": slug.current,
@@ -53,9 +53,12 @@ const POST_FIELDS = groq`
 `
 
 export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
+  if (!slug || typeof slug !== 'string') return null
+
   const query = groq`*[_type == "post" && (slug.current == $slug || _id == $slug) && !(_id in path("drafts.**"))][0] {
     ${POST_FIELDS}
   }`
+
   return await client.fetch<PostItem | null>(
     query,
     { slug },
@@ -90,7 +93,7 @@ export async function fetchCategoryCounts(): Promise<CategoryCount[]> {
 
   const counts: Record<string, number> = {}
   posts.forEach((item) => {
-    if (item.category) {
+    if (item.category && typeof item.category === 'string') {
       counts[item.category] = (counts[item.category] || 0) + 1
     }
   })

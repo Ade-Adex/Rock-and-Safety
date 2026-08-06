@@ -5,17 +5,24 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function subscribeNewsletter(formData: FormData) {
-  const email = formData.get('email') as string
+  const name = (formData.get('name') as string)?.trim() || ''
+  const email = (formData.get('email') as string)?.trim() || ''
 
   if (!email || !email.includes('@')) {
     return { success: false, message: 'Please provide a valid email address.' }
   }
 
+  // Split name into firstName and lastName for Resend contact creation
+  const nameParts = name.split(' ')
+  const firstName = nameParts[0] || ''
+  const lastName = nameParts.slice(1).join(' ') || ''
+
   try {
-    // 1. Add the subscriber to your Resend Contacts/Audience
-    // (If you created a specific Audience ID in your Resend dashboard, you can pass `audienceId: 'YOUR_ID'`)
+    // 1. Add subscriber to Resend Contacts with name details
     const { error: contactError } = await resend.contacts.create({
       email: email,
+      firstName: firstName,
+      lastName: lastName,
       unsubscribed: false,
     })
 
@@ -27,12 +34,12 @@ export async function subscribeNewsletter(formData: FormData) {
       }
     }
 
-    // 2. (Optional) Send a notification email to yourself about the new subscriber
+    // 2. Send notification email to admin with name included
     await resend.emails.send({
-      from: `Rock & Safety <info@rockandsafety.com>`, // Use your verified domain email
+      from: `Rock & Safety <info@rockandsafety.com>`,
       to: ['info@rockandsafety.com'],
       subject: 'New Newsletter Subscriber!',
-      text: `A new user just subscribed to the newsletter: ${email}`,
+      text: `A new user just subscribed to the newsletter:\nName: ${name || 'N/A'}\nEmail: ${email}`,
     })
 
     return { success: true, message: 'Thank you for subscribing!' }
