@@ -16,6 +16,7 @@ import {
 export interface NavLink {
   label: string
   href: string
+  sectionId?: string
   icon?: IconType
   hideInNavbar?: boolean
   hideInQuickNav?: boolean
@@ -24,17 +25,29 @@ export interface NavLink {
 }
 
 export const NAV_LINKS: NavLink[] = [
-  { label: 'Home', href: '/', icon: FiHome, hideInFooter: true },
-  { label: 'About', href: '/about', icon: FiInfo },
-  { label: 'Services', href: '/services', icon: FiBriefcase },
   {
-    label: 'Portfolio ',
+    label: 'Home',
+    href: '/',
+    sectionId: 'home',
+    icon: FiHome,
+    hideInFooter: true,
+  },
+  { label: 'About', href: '/about', icon: FiInfo },
+  {
+    label: 'Services',
+    href: '/#services',
+    sectionId: 'services',
+    icon: FiBriefcase,
+  },
+  {
+    label: 'Portfolio',
     href: '/portfolio',
+    sectionId: 'portfolio',
     icon: FiFolder,
   },
   {
     label: 'Spotlight',
-    href: '/Spotlight',
+    href: '/spotlight',
     icon: FiFolder,
     subLinks: [
       {
@@ -51,14 +64,16 @@ export const NAV_LINKS: NavLink[] = [
   },
   {
     label: 'Testimonials',
-    href: '#testimonials',
+    href: '/#testimonials',
+    sectionId: 'testimonials',
     icon: FiMessageSquare,
-    hideInNavbar: true, // Removed from Navbar
+    hideInNavbar: true,
     hideInQuickNav: true,
   },
   {
     label: 'Team',
-    href: '#team',
+    href: '/#team',
+    sectionId: 'team',
     icon: FiUsers,
     hideInNavbar: true,
     hideInFooter: true,
@@ -66,18 +81,25 @@ export const NAV_LINKS: NavLink[] = [
   },
   {
     label: 'Stats',
-    href: '#stats',
+    href: '/#stats',
+    sectionId: 'stats',
     hideInNavbar: true,
     hideInQuickNav: true,
     hideInFooter: true,
   },
-  { label: 'Blog', href: '/blog', icon: FiBookOpen },
+  { label: 'Blog', href: '/blog', sectionId: 'blog', icon: FiBookOpen },
   {
     label: 'FAQ',
-    href: '#faq',
+    href: '/#faq',
+    sectionId: 'faq',
     icon: FiHelpCircle,
     hideInNavbar: true,
     hideInFooter: true,
   },
-  { label: 'Contact', href: '/contact', icon: FiMail },
+  {
+    label: 'Contact',
+    href: '/contact',
+    sectionId: 'contact',
+    icon: FiMail,
+  },
 ]

@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { NAV_LINKS } from '@/app/constants/navigation'
+import { usePathname } from 'next/navigation'
+import { NAV_LINKS, NavLink } from '@/app/constants/navigation'
 
 interface NavLinksProps {
   onLinkClick?: () => void
@@ -14,10 +15,17 @@ export default function NavLinks({
   mobile = false,
 }: NavLinksProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const pathname = usePathname()
   const navLinks = NAV_LINKS.filter((link) => !link.hideInNavbar)
 
   const toggleDropdown = (label: string) => {
     setOpenDropdown(openDropdown === label ? null : label)
+  }
+
+  const isLinkActive = (link: NavLink) => {
+    if (link.href === '/') return pathname === '/'
+    if (link.href.startsWith('/#')) return false
+    return pathname.startsWith(link.href)
   }
 
   // --- MOBILE VIEW ---
@@ -27,6 +35,7 @@ export default function NavLinks({
         {navLinks.map((link) => {
           const hasSubLinks = link.subLinks && link.subLinks.length > 0
           const isOpen = openDropdown === link.label
+          const active = isLinkActive(link)
 
           if (hasSubLinks) {
             return (
@@ -37,7 +46,11 @@ export default function NavLinks({
                 <button
                   type="button"
                   onClick={() => toggleDropdown(link.label)}
-                  className="flex items-center justify-between w-full text-foreground hover:text-primary text-base py-2 font-semibold"
+                  className={`flex items-center justify-between w-full text-base py-2 font-semibold transition-colors ${
+                    active
+                      ? 'text-accent-gold font-bold'
+                      : 'text-foreground hover:text-primary'
+                  }`}
                 >
                   <span>{link.label}</span>
                   <svg
@@ -61,12 +74,17 @@ export default function NavLinks({
                   <div className="pl-4 mt-1 flex flex-col space-y-2 border-l border-card-border ml-2">
                     {link.subLinks?.map((sub) => {
                       const SubIcon = sub.icon
+                      const subActive = pathname === sub.href
                       return (
                         <Link
                           key={sub.label}
                           href={sub.href}
                           onClick={onLinkClick}
-                          className="flex items-center gap-2 text-muted hover:text-primary text-sm py-1 font-medium"
+                          className={`flex items-center gap-2 text-sm py-1 font-medium transition-colors ${
+                            subActive
+                              ? 'text-accent-gold font-bold'
+                              : 'text-muted hover:text-primary'
+                          }`}
                         >
                           {SubIcon && <SubIcon className="w-4 h-4" />}
                           {sub.label}
@@ -84,7 +102,11 @@ export default function NavLinks({
               key={link.label}
               href={link.href}
               onClick={onLinkClick}
-              className="text-foreground hover:text-primary text-base py-2 border-b border-card-border font-semibold block"
+              className={`text-base py-2 border-b border-card-border font-semibold block transition-colors ${
+                active
+                  ? 'text-accent-gold font-bold'
+                  : 'text-foreground hover:text-primary'
+              }`}
             >
               {link.label}
             </Link>
@@ -99,6 +121,7 @@ export default function NavLinks({
     <nav className="flex items-center space-x-6 text-xs font-bold tracking-wider uppercase">
       {navLinks.map((link) => {
         const hasSubLinks = link.subLinks && link.subLinks.length > 0
+        const active = isLinkActive(link)
 
         if (hasSubLinks) {
           return (
@@ -111,7 +134,11 @@ export default function NavLinks({
               <Link
                 href={link.href}
                 onClick={onLinkClick}
-                className="flex items-center gap-1 text-foreground group-hover:text-primary transition-colors text-xs font-bold tracking-wider"
+                className={`flex items-center gap-1 transition-colors text-xs font-bold tracking-wider ${
+                  active
+                    ? 'text-accent-gold font-extrabold'
+                    : 'text-foreground group-hover:text-primary'
+                }`}
               >
                 {link.label}
                 <svg
@@ -133,12 +160,17 @@ export default function NavLinks({
               <div className="absolute top-full left-0 hidden group-hover:flex flex-col w-52 bg-background border border-card-border rounded-lg shadow-xl p-2 z-50 normal-case">
                 {link.subLinks?.map((sub) => {
                   const SubIcon = sub.icon
+                  const subActive = pathname === sub.href
                   return (
                     <Link
                       key={sub.label}
                       href={sub.href}
                       onClick={onLinkClick}
-                      className="flex items-center gap-2 text-xs font-semibold text-foreground hover:text-primary hover:bg-card-border/30 px-3 py-2 rounded-md transition-colors"
+                      className={`flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-md transition-colors ${
+                        subActive
+                          ? 'text-accent-gold bg-card-border/40 font-bold'
+                          : 'text-foreground hover:text-primary hover:bg-card-border/30'
+                      }`}
                     >
                       {SubIcon && <SubIcon className="w-4 h-4 text-primary" />}
                       {sub.label}
@@ -155,7 +187,11 @@ export default function NavLinks({
             key={link.label}
             href={link.href}
             onClick={onLinkClick}
-            className="text-foreground hover:text-primary transition-colors text-xs font-bold tracking-wider"
+            className={`transition-colors text-xs font-bold tracking-wider ${
+              active
+                ? 'text-accent-gold font-extrabold'
+                : 'text-foreground hover:text-primary'
+            }`}
           >
             {link.label}
           </Link>
