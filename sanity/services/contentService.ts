@@ -57,9 +57,9 @@ const POST_FIELDS = groq`
 export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
   if (!slug || typeof slug !== 'string') return null
 
-  const query = groq`*[_type == "post" && (slug.current == $slug || _id == $slug) && !(_id in path("drafts.**"))][0] {
-    ${POST_FIELDS}
-  }`
+  const query = groq`*[_type == "post" && (slug.current == $slug || _id == $slug) && publishedAt <= now() && !(_id in path("drafts.**"))][0] {
+  ${POST_FIELDS}
+}`
 
   return await client.fetch<PostItem | null>(
     query,
@@ -69,13 +69,13 @@ export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
 }
 
 export async function fetchRecentPosts(limit: number = 4): Promise<PostItem[]> {
-  const query = groq`*[_type == "post" && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc)[0...$limit] {
-    _id,
-    title,
-    "slug": coalesce(slug.current, _id),
-    "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
-    "date": coalesce(publishedAt, _createdAt)
-  }`
+ const query = groq`*[_type == "post" && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc)[0...$limit] {
+  _id,
+  title,
+  "slug": coalesce(slug.current, _id),
+  "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
+  "date": coalesce(publishedAt, _createdAt)
+}`
   return await client.fetch<PostItem[]>(
     query,
     { limit },
@@ -110,6 +110,7 @@ export async function fetchFilteredPosts(
 
   const conditions: string[] = [
     '_type == "post"',
+    'publishedAt <= now()',
     '!(_id in path("drafts.**"))',
   ]
   const params: Record<string, unknown> = { limit }
@@ -174,12 +175,12 @@ export async function fetchPortfolio(
 }
 
 export async function fetchPosts(): Promise<PostItem[]> {
-  const query = groq`*[_type == "post" && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc) { ${POST_FIELDS} }`
+  const query = groq`*[_type == "post" && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc) { ${POST_FIELDS} }`
   return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
-  const query = groq`*[_type == "post" && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc)[0...$limit] { ${POST_FIELDS} }`
+ const query = groq`*[_type == "post" && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc)[0...$limit] { ${POST_FIELDS} }`
   return await client.fetch<PostItem[]>(
     query,
     { limit },
@@ -188,7 +189,7 @@ export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
 }
 
 export async function fetchFeaturedPosts(): Promise<PostItem[]> {
-  const query = groq`*[_type == "post" && isFeatured == true && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc) { ${POST_FIELDS} }`
+  const query = groq`*[_type == "post" && isFeatured == true && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc) { ${POST_FIELDS} }`
   return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
