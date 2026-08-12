@@ -23,5 +23,11 @@ export const serviceType = defineType({
       type: 'text',
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'category',
+      title: 'Category',
+      type: 'reference',
+      to: [{ type: 'category' }],
+    }),
   ],
 })

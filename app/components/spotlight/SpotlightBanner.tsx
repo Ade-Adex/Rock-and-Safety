@@ -21,7 +21,7 @@ export default function SpotlightBanner({
           <FiStar className="w-8 h-8 text-accent-gold" />
         </div>
         <div className="space-y-1">
-          <h2 className="text-2xl sm:text-3xl font-extrabold">{title}</h2>
+          <h2 className="text-xl sm:text-3xl font-extrabold">{title}</h2>
           <p className="text-sm text-muted">{subtitle}</p>
         </div>
       </div>

@@ -20,7 +20,7 @@ export default function SpotlightPricing({
         <span className="text-xs font-extrabold uppercase tracking-widest text-accent-gold">
           SIMPLE PRICING
         </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground">
+        <h2 className="text-2xl sm:text-4xl font-extrabold text-foreground">
           Affordable. Transparent. Valuable.
         </h2>
         <div className="w-12 h-1 bg-accent-gold mx-auto mt-2"></div>

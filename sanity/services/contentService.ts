@@ -24,7 +24,7 @@ const POST_FIELDS = groq`
   "date": coalesce(scheduleDate, publishedAt, _createdAt),
   description,
   "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
-  "category": coalesce(category->title, category),
+  "category": coalesce(category->title, category->name, category),
   "author": {
     "name": coalesce(author->name, author.name, "Rock and Safety Team"),
     "bio": author->bio,
@@ -46,7 +46,7 @@ const POST_FIELDS = groq`
     "text": children[0].text,
     "level": style
   },
-  "relatedArticles": *[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && category == ^.category && _id != ^._id][0..1]{
+  "relatedArticles": *[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && coalesce(category->title, category->name, category) == ^.category && _id != ^._id][0..1]{
     _id,
     title,
     "slug": slug.current,
@@ -58,7 +58,6 @@ const POST_FIELDS = groq`
 export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
   if (!slug || typeof slug !== 'string') return null
 
-  // Added scheduleDate check so users can't access future post URLs prematurely
   const query = groq`*[_type == "post" && (slug.current == $slug || _id == $slug) && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))][0] {
     ${POST_FIELDS}
   }`
@@ -71,7 +70,6 @@ export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
 }
 
 export async function fetchRecentPosts(limit: number = 4): Promise<PostItem[]> {
-  // Added scheduleDate check
   const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc)[0...$limit] {
     _id,
     title,
@@ -86,10 +84,29 @@ export async function fetchRecentPosts(limit: number = 4): Promise<PostItem[]> {
   )
 }
 
+/**
+ * Fetch all categories directly from category documents or active post categories
+ */
+export async function fetchCategories(): Promise<string[]> {
+  const query = groq`*[_type == "category"].title`
+  const categoryTitles = await client.fetch<string[]>(
+    query,
+    {},
+    { next: { revalidate: 0 } },
+  )
+
+  if (categoryTitles && categoryTitles.length > 0) {
+    return Array.from(new Set(categoryTitles.filter(Boolean)))
+  }
+
+  // Fallback to active post categories
+  const counts = await fetchCategoryCounts()
+  return counts.map((c) => c.name)
+}
+
 export async function fetchCategoryCounts(): Promise<CategoryCount[]> {
-  // Filter category counts by active scheduled posts only
   const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && defined(category)] {
-    "category": coalesce(category->title, category)
+    "category": coalesce(category->title, category->name, category)
   }`
   const posts = await client.fetch<{ category: string }[]>(
     query,
@@ -120,7 +137,9 @@ export async function fetchFilteredPosts(
   const params: Record<string, unknown> = { limit }
 
   if (category && category !== 'All') {
-    conditions.push('lower(coalesce(category->title, category)) == $category')
+    conditions.push(
+      'lower(coalesce(category->title, category->name, category)) == $category',
+    )
     params.category = category.toLowerCase()
   }
   if (tag) {
@@ -148,13 +167,11 @@ export async function fetchFilteredPosts(
 }
 
 export async function fetchPosts(): Promise<PostItem[]> {
-  // Added scheduleDate check & dynamic order
   const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc) { ${POST_FIELDS} }`
   return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
-  // Added scheduleDate check
   const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc)[0...$limit] { ${POST_FIELDS} }`
   return await client.fetch<PostItem[]>(
     query,
@@ -164,7 +181,6 @@ export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
 }
 
 export async function fetchFeaturedPosts(): Promise<PostItem[]> {
-  // Added scheduleDate check
   const query = groq`*[_type == "post" && isFeatured == true && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc) { ${POST_FIELDS} }`
   return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
 }
@@ -182,7 +198,9 @@ export async function fetchPortfolio(
   const params: Record<string, unknown> = {}
 
   if (category && category !== 'All') {
-    conditions.push('lower(category) == $category')
+    conditions.push(
+      'lower(coalesce(category->title, category->name, category)) == $category',
+    )
     params.category = category.toLowerCase()
   }
 
@@ -192,7 +210,12 @@ export async function fetchPortfolio(
   if (sort === 'title') orderClause = '| order(title asc)'
 
   const query = groq`*[${whereClause}] ${orderClause} {
-    _id, title, category, "image": image.asset->url, link, _createdAt
+    _id,
+    title,
+    "category": coalesce(category->title, category->name, category),
+    "image": image.asset->url,
+    link,
+    _createdAt
   }`
 
   return await client.fetch<PortfolioItem[]>(query, params, {
@@ -241,7 +264,7 @@ export async function fetchSpotlightData(
     "titleHighlight": select(titleHighlightPreset == "OTHER" => titleHighlightCustom, titleHighlightPreset),
     "description": select(descriptionPreset == "OTHER" => descriptionCustom, descriptionPreset),
     "ctaButtonText": select(ctaButtonTextPreset == "OTHER" => ctaButtonTextCustom, ctaButtonTextPreset),
-    ctaButtonUrl, // Added
+    ctaButtonUrl,
     "heroImage": heroImage.asset->url,
     heroHighlights[] {
       icon,
@@ -257,7 +280,7 @@ export async function fetchSpotlightData(
     "bannerTitle": select(bannerTitlePreset == "OTHER" => bannerTitleCustom, bannerTitlePreset),
     "bannerSubtitle": select(bannerSubtitlePreset == "OTHER" => bannerSubtitleCustom, bannerSubtitlePreset),
     "bannerCta": select(bannerCtaPreset == "OTHER" => bannerCtaCustom, bannerCtaPreset),
-    bannerCtaUrl // Added
+    bannerCtaUrl
   }`
 
   const data = await client.fetch(
@@ -275,7 +298,7 @@ export async function fetchSpotlightData(
       titleHighlight: data.titleHighlight || '',
       description: data.description || '',
       ctaButtonText: data.ctaButtonText || '',
-      ctaButtonUrl: data.ctaButtonUrl || '#pricing', // Fallback
+      ctaButtonUrl: data.ctaButtonUrl || '#pricing',
       heroImage: data.heroImage || '',
       pricingFeatures: data.pricingFeatures || [],
       heroHighlights:
@@ -286,7 +309,7 @@ export async function fetchSpotlightData(
       bannerTitle: data.bannerTitle || '',
       bannerSubtitle: data.bannerSubtitle || '',
       bannerCta: data.bannerCta || '',
-      bannerCtaUrl: data.bannerCtaUrl || '#pricing', // Fallback
+      bannerCtaUrl: data.bannerCtaUrl || '#pricing',
     },
     steps:
       data.steps?.map(

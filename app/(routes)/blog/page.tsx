@@ -2,7 +2,11 @@ import Link from 'next/link'
 import SectionHeader from '@/app/components/ui/SectionHeader'
 import Button from '@/app/components/ui/Button'
 import BlogCard from '@/app/components/blog/BlogCard'
-import { fetchFilteredPosts } from '@/sanity/services/contentService'
+import BlogCategoryFilter from '@/app/components/blog/BlogCategoryFilter'
+import {
+  fetchFilteredPosts,
+  fetchCategoryCounts,
+} from '@/sanity/services/contentService'
 import { PostItem } from '@/app/types/post'
 
 interface BlogPageProps {
@@ -13,31 +17,29 @@ interface BlogPageProps {
   }>
 }
 
-const CATEGORIES = [
-  'All',
-  'Technology',
-  'Design',
-  'Business',
-  'Marketing',
-  'Engineering',
-]
-
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const resolvedParams = await searchParams
   const categoryQuery = resolvedParams.category || 'All'
   const sortQuery = resolvedParams.sort || 'latest'
   const searchQuery = resolvedParams.search || ''
 
-  const posts: PostItem[] = await fetchFilteredPosts({
-    category: categoryQuery,
-    sort: sortQuery,
-    search: searchQuery,
-  })
+  // Fetch posts and categories dynamically from Sanity in parallel
+  const [posts, rawCategories] = await Promise.all([
+    fetchFilteredPosts({
+      category: categoryQuery,
+      sort: sortQuery,
+      search: searchQuery,
+    }),
+    fetchCategoryCounts(),
+  ])
 
-  const createFilterUrl = (cat?: string, sort?: string) => {
+  // Extract category names dynamically from Sanity and prepend 'All'
+  const categories = ['All', ...rawCategories.map((cat) => cat.name)]
+
+  const createSortUrl = (sort: string) => {
     const params = new URLSearchParams()
-    params.set('category', cat ?? categoryQuery)
-    params.set('sort', sort ?? sortQuery)
+    params.set('category', categoryQuery)
+    params.set('sort', sort)
     if (searchQuery) params.set('search', searchQuery)
     return `?${params.toString()}`
   }
@@ -61,30 +63,20 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
         {/* Filter Controls */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 my-8 pb-6 border-b border-card-border">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
-            {CATEGORIES.map((cat) => {
-              const isActive = categoryQuery.toLowerCase() === cat.toLowerCase()
-              return (
-                <Link key={cat} href={createFilterUrl(cat, sortQuery)}>
-                  <span
-                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
-                      isActive
-                        ? 'bg-primary text-black'
-                        : 'bg-card-bg text-muted hover:text-foreground border border-card-border'
-                    }`}
-                  >
-                    {cat}
-                  </span>
-                </Link>
-              )
-            })}
-          </div>
+          {/* Responsive Category Filter */}
+          <BlogCategoryFilter
+            categories={categories}
+            activeCategory={categoryQuery}
+            sortQuery={sortQuery}
+            searchQuery={searchQuery}
+          />
 
+          {/* Sort Controls */}
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-xs text-muted font-medium">Sort:</span>
             <div className="flex bg-card-bg border border-card-border rounded-lg p-1">
               <Link
-                href={createFilterUrl(categoryQuery, 'latest')}
+                href={createSortUrl('latest')}
                 className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${
                   sortQuery === 'latest'
                     ? 'bg-primary/20 text-primary'
@@ -94,7 +86,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 Latest
               </Link>
               <Link
-                href={createFilterUrl(categoryQuery, 'oldest')}
+                href={createSortUrl('oldest')}
                 className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${
                   sortQuery === 'oldest'
                     ? 'bg-primary/20 text-primary'
@@ -110,7 +102,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         {/* Posts Grid */}
         {posts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
+            {posts.map((post: PostItem) => (
               <BlogCard key={post._id} post={post} />
             ))}
           </div>

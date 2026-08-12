@@ -3,4 +3,10 @@ export interface ServiceItem {
   title: string
   icon: string
   description: string
+  category?:
+    | {
+        _id: string
+        name: string
+      }
+    | string
 }

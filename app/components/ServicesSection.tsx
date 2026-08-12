@@ -8,17 +8,6 @@ interface ServicesSectionProps {
   services: ServiceItem[]
 }
 
-const serviceToCategoryMap: Record<string, string> = {
-  'Digital Marketing': 'Marketing',
-  'Web Development': 'Web Development',
-  'UI/UX Design': 'UI/UX Design',
-  Branding: 'Branding',
-  'Social Media Management': 'Marketing',
-  'Sales Funnels': 'Web Development',
-  'Book Publishing & Marketing': 'Publishing',
-  Consulting: 'All',
-}
-
 export default function ServicesSection({ services }: ServicesSectionProps) {
   return (
     <section className="bg-surface-white py-12 px-4 sm:px-8 md:px-12 lg:px-16 border-b border-surface-white-border">
@@ -30,8 +19,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {services.map((service) => {
-          const categoryParam = serviceToCategoryMap[service.title] || 'All'
-          const projectDetailsUrl = `/portfolios?category=${encodeURIComponent(categoryParam)}&service=${encodeURIComponent(service.title)}`
+          const projectDetailsUrl = `/portfolios?service=${encodeURIComponent(service.title)}`
 
           return (
             <div

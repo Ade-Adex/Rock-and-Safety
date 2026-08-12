@@ -12,7 +12,7 @@ export default function SpotlightSteps({ steps }: SpotlightStepsProps) {
         <span className="text-xs font-extrabold uppercase tracking-widest text-accent-gold">
           HOW IT WORKS
         </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground">
+        <h2 className="text-2xl sm:text-4xl font-extrabold text-foreground">
           Simple Steps. Powerful Results.
         </h2>
       </div>

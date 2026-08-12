@@ -23,7 +23,7 @@ export default function SpotlightHero({
           </span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl font-black text-foreground tracking-tight leading-tight">
+        <h1 className="text-3xl sm:text-5xl font-black text-foreground tracking-tight leading-tight">
           {content.titlePrefix}{' '}
           <span className="text-accent-gold block mt-1">
             {content.titleHighlight}
