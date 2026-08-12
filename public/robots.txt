@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.rockandsafety.com
+
+# Sitemaps
+Sitemap: https://www.rockandsafety.com/sitemap.xml
