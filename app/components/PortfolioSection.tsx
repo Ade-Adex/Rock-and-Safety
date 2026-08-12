@@ -123,7 +123,7 @@ export default function PortfolioSection({ items }: PortfolioSectionProps) {
       </div>
 
       <div className="text-center mt-12">
-        <Link href="/portfolios" className="inline-block">
+        <Link href="/portfolio" className="inline-block">
           <Button variant="outline">VIEW ALL PROJECTS →</Button>
         </Link>
       </div>
