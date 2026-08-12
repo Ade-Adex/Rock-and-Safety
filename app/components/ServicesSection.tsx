@@ -1,8 +1,8 @@
 'use client'
 
-import Link from 'next/link'
 import SectionHeader from '@/app/components/ui/SectionHeader'
 import { ServiceItem } from '@/app/types/service'
+import Link from 'next/link'
 
 interface ServicesSectionProps {
   services: ServiceItem[]
@@ -31,7 +31,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {services.map((service) => {
           const categoryParam = serviceToCategoryMap[service.title] || 'All'
-          const projectDetailsUrl = `/projects?category=${encodeURIComponent(categoryParam)}&service=${encodeURIComponent(service.title)}`
+          const projectDetailsUrl = `/portfolios?category=${encodeURIComponent(categoryParam)}&service=${encodeURIComponent(service.title)}`
 
           return (
             <div

@@ -81,6 +81,7 @@ export default function Header() {
         <HeaderMobileMenu
           isOpen={mobileMenuOpen}
           onClose={() => setMobileMenuOpen(false)}
+          onOpenModal={() => setIsModalOpen(true)}
         />
       </header>
 

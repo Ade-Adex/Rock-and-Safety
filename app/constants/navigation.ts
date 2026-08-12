@@ -1,6 +1,7 @@
 import { IconType } from 'react-icons'
 import {
   FiHome,
+  FiInfo,
   FiBriefcase,
   FiFolder,
   FiMessageSquare,
@@ -8,6 +9,8 @@ import {
   FiHelpCircle,
   FiBookOpen,
   FiMail,
+  FiFeather,
+  FiAward,
 } from 'react-icons/fi'
 
 export interface NavLink {
@@ -17,16 +20,40 @@ export interface NavLink {
   hideInNavbar?: boolean
   hideInQuickNav?: boolean
   hideInFooter?: boolean
+  subLinks?: Omit<NavLink, 'subLinks'>[]
 }
 
 export const NAV_LINKS: NavLink[] = [
-  { label: 'Home', href: '#home', icon: FiHome, hideInFooter: true },
-  { label: 'Services', href: '#services', icon: FiBriefcase },
-  { label: 'Portfolio', href: '#portfolio', icon: FiFolder },
+  { label: 'Home', href: '/', icon: FiHome, hideInFooter: true },
+  { label: 'About', href: '/about', icon: FiInfo },
+  { label: 'Services', href: '/services', icon: FiBriefcase },
+  {
+    label: 'Portfolio ',
+    href: '/portfolio',
+    icon: FiFolder,
+  },
+  {
+    label: 'Spotlight',
+    href: '/Spotlight',
+    icon: FiFolder,
+    subLinks: [
+      {
+        label: 'Author Spotlight',
+        href: '/spotlight?category=Author',
+        icon: FiFeather,
+      },
+      {
+        label: 'Business Spotlight',
+        href: '/spotlight?category=Business',
+        icon: FiAward,
+      },
+    ],
+  },
   {
     label: 'Testimonials',
     href: '#testimonials',
     icon: FiMessageSquare,
+    hideInNavbar: true, // Removed from Navbar
     hideInQuickNav: true,
   },
   {
@@ -44,7 +71,7 @@ export const NAV_LINKS: NavLink[] = [
     hideInQuickNav: true,
     hideInFooter: true,
   },
-  { label: 'Blog', href: '#blog', icon: FiBookOpen },
+  { label: 'Blog', href: '/blog', icon: FiBookOpen },
   {
     label: 'FAQ',
     href: '#faq',
@@ -52,5 +79,5 @@ export const NAV_LINKS: NavLink[] = [
     hideInNavbar: true,
     hideInFooter: true,
   },
-  { label: 'Contact', href: '#contact', icon: FiMail },
+  { label: 'Contact', href: '/contact', icon: FiMail },
 ]

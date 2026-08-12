@@ -77,7 +77,7 @@ export default function Team({ teamMembers }: TeamProps) {
 
           {/* Remaining Members */}
           {restMembers.length > 0 && (
-            <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2 grid grid-cols-2 sm:grid-cols-2 gap-4">
               {restMembers.map((member, idx) => (
                 <ScrollReveal
                   key={member._id}

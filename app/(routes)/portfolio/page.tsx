@@ -1,7 +1,7 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import SectionHeader from '@/app/components/ui/SectionHeader'
 import Button from '@/app/components/ui/Button'
+import PortfolioCard from '@/app/components/portfolio/PortfolioCard'
 import { fetchPortfolio } from '@/sanity/services/contentService'
 import { PortfolioItem } from '@/app/types/portfolio'
 
@@ -30,13 +30,11 @@ export default async function ProjectDetailsPage({
   const serviceTitle = resolvedParams.service || 'Service'
   const sortQuery = resolvedParams.sort || 'latest'
 
-  // Fetch filtered & sorted portfolio data straight from Sanity GROQ
   const relatedProjects: PortfolioItem[] = await fetchPortfolio({
     category: categoryQuery,
     sort: sortQuery,
   })
 
-  // Helper to build URL search params safely
   const createFilterUrl = (newCategory?: string, newSort?: string) => {
     const params = new URLSearchParams()
     if (serviceTitle && serviceTitle !== 'Service')
@@ -49,7 +47,6 @@ export default async function ProjectDetailsPage({
   return (
     <main className="bg-dark min-h-screen text-foreground py-16 px-4 sm:px-8 md:px-12 lg:px-16">
       <div className="max-w-7xl mx-auto">
-        {/* Navigation back */}
         <div className="mb-8">
           <Link href="/">
             <Button variant="outline" className="text-xs">
@@ -58,7 +55,6 @@ export default async function ProjectDetailsPage({
           </Link>
         </div>
 
-        {/* Section Header */}
         <SectionHeader
           badge={serviceTitle.toUpperCase()}
           title={`Projects & Work for ${serviceTitle}`}
@@ -67,7 +63,6 @@ export default async function ProjectDetailsPage({
 
         {/* Filter & Sort Controls Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 my-8 pb-6 border-b border-card-border">
-          {/* Category Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
             {CATEGORIES.map((cat) => {
               const isActive = categoryQuery.toLowerCase() === cat.toLowerCase()
@@ -87,7 +82,6 @@ export default async function ProjectDetailsPage({
             })}
           </div>
 
-          {/* Sort Dropdown / Links */}
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-xs text-muted font-medium">Sort by:</span>
             <div className="flex bg-card-bg border border-card-border rounded-lg p-1">
@@ -125,60 +119,11 @@ export default async function ProjectDetailsPage({
           <span className="text-primary font-semibold">{sortQuery}</span>.
         </p>
 
-        {/* Projects Grid */}
+        {/* Reusable Portfolio Cards Grid (4 columns on lg) */}
         {relatedProjects.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedProjects.map((item: PortfolioItem) => (
-              <div
-                key={item._id}
-                className="group rounded-xl overflow-hidden bg-card-bg border border-card-border flex flex-col justify-between hover:border-primary/50 transition-all duration-300 shadow-lg"
-              >
-                <div className="relative aspect-16/9 w-full overflow-hidden bg-card-border">
-                  {item.image ? (
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted text-xs">
-                      No Image Available
-                    </div>
-                  )}
-                  {item.category && (
-                    <span className="absolute top-3 left-3 bg-dark/80 backdrop-blur-md text-accent-gold text-[10px] font-bold px-2.5 py-1 rounded-md border border-card-border uppercase tracking-wider">
-                      {item.category}
-                    </span>
-                  )}
-                </div>
-
-                <div className="p-6 flex flex-col grow justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
-                      {item.title}
-                    </h3>
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-card-border/60 flex items-center justify-between">
-                    {item.link ? (
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
-                      >
-                        VIEW LIVE DEMO →
-                      </a>
-                    ) : (
-                      <span className="text-xs font-semibold text-muted flex items-center gap-1">
-                        CASE STUDY →
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <PortfolioCard key={item._id} item={item} variant="standard" />
             ))}
           </div>
         ) : (
