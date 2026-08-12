@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import {
+  FiPhone,
   FiMail,
   FiMapPin,
   FiClock,
@@ -23,7 +24,7 @@ export default function ContactPage() {
     e.preventDefault()
     setLoading(true)
 
-    // Simulate API form submission
+    // Simulate form submission
     setTimeout(() => {
       setLoading(false)
       setSubmitted(true)
@@ -32,7 +33,7 @@ export default function ContactPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground pt-28 pb-16 px-4 sm:px-6 lg:px-8 space-y-16">
+    <main className="min-h-screen bg-background text-foreground py-12 px-4 sm:px-8 md:px-12 lg:px-16 space-y-16">
       {/* Header */}
       <section className="max-w-4xl mx-auto text-center space-y-4">
         <span className="text-xs font-extrabold uppercase tracking-widest text-accent-gold">
@@ -42,14 +43,14 @@ export default function ContactPage() {
           We’d Love to Hear From You
         </h1>
         <p className="text-muted text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-          Have a question, feedback, or want to collaborate on a spotlight? Send
-          us a message and our team will respond shortly.
+          Have a question, feedback, or need assistance? Reach out to us
+          directly or fill out the form below.
         </p>
       </section>
 
       {/* Main Content Grid */}
       <section className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
-        {/* Contact Info Sidebar (4 Cols) */}
+        {/* Contact Info Sidebar */}
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 space-y-6">
             <h3 className="text-xl font-bold text-foreground">
@@ -57,23 +58,43 @@ export default function ContactPage() {
             </h3>
 
             <div className="space-y-6">
+              {/* Phone */}
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-accent-gold/10 text-accent-gold flex items-center justify-center shrink-0 mt-1">
+                  <FiPhone className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted">
+                    Phone Number
+                  </h4>
+                  <a
+                    href="tel:+2348152245314"
+                    className="text-sm font-semibold text-foreground hover:text-accent-gold transition-colors"
+                  >
+                    +234 815 224 5314
+                  </a>
+                </div>
+              </div>
+
+              {/* Email */}
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-accent-gold/10 text-accent-gold flex items-center justify-center shrink-0 mt-1">
                   <FiMail className="w-5 h-5" />
                 </div>
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-muted">
-                    Email Us
+                    Email Address
                   </h4>
                   <a
-                    href="mailto:support@christbcogbomoso.org"
-                    className="text-sm font-semibold text-foreground hover:text-accent-gold transition-colors"
+                    href="mailto:info@rockandsafety.com"
+                    className="text-sm font-semibold text-foreground hover:text-accent-gold transition-colors break-all"
                   >
-                    support@christbcogbomoso.org
+                    info@rockandsafety.com
                   </a>
                 </div>
               </div>
 
+              {/* Location */}
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-accent-gold/10 text-accent-gold flex items-center justify-center shrink-0 mt-1">
                   <FiMapPin className="w-5 h-5" />
@@ -83,21 +104,22 @@ export default function ContactPage() {
                     Location
                   </h4>
                   <p className="text-sm font-semibold text-foreground">
-                    Ogbomoso, Oyo State, Nigeria
+                    Nigeria
                   </p>
                 </div>
               </div>
 
+              {/* Working Hours */}
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-accent-gold/10 text-accent-gold flex items-center justify-center shrink-0 mt-1">
                   <FiClock className="w-5 h-5" />
                 </div>
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-muted">
-                    Response Time
+                    Working Hours
                   </h4>
                   <p className="text-sm font-semibold text-foreground">
-                    Within 24 - 48 business hours
+                    Mon - Fri: 8:00 AM - 6:00 PM
                   </p>
                 </div>
               </div>
@@ -105,7 +127,7 @@ export default function ContactPage() {
           </div>
         </div>
 
-        {/* Form Area (7 Cols) */}
+        {/* Form Area */}
         <div className="lg:col-span-7">
           <div className="bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 shadow-sm">
             {submitted ? (
@@ -117,13 +139,13 @@ export default function ContactPage() {
                   Message Sent!
                 </h3>
                 <p className="text-muted text-sm max-w-md mx-auto">
-                  Thank you for reaching out. We have received your message and
-                  will get back to you soon.
+                  Thank you for contacting us. We have received your message and
+                  will respond during working hours.
                 </p>
                 <button
                   type="button"
                   onClick={() => setSubmitted(false)}
-                  className="mt-4 text-xs font-extrabold uppercase tracking-wider text-accent-gold hover:underline"
+                  className="mt-4 text-xs font-extrabold uppercase tracking-wider text-accent-gold hover:underline cursor-pointer"
                 >
                   Send another message
                 </button>
@@ -175,7 +197,7 @@ export default function ContactPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, subject: e.target.value })
                     }
-                    placeholder="General Inquiry / Spotlight Request"
+                    placeholder="Inquiry / Feedback"
                     className="w-full bg-background border border-card-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-accent-gold transition-colors"
                   />
                 </div>

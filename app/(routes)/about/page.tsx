@@ -37,7 +37,7 @@ const VALUES = [
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground pt-28 pb-16 px-4 sm:px-6 lg:px-8 space-y-20">
+    <main className="min-h-screen bg-background text-foreground py-12 px-4 sm:px-8 md:px-12 lg:px-16 space-y-20">
       {/* Hero Header */}
       <section className="max-w-4xl mx-auto text-center space-y-4">
         <span className="text-xs font-extrabold uppercase tracking-widest text-accent-gold">
