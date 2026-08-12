@@ -1,9 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 import SectionHeader from '@/app/components/ui/SectionHeader'
-import Button from '@/app/components/ui/Button'
 import { TestimonialItem } from '@/app/types/testimonial'
 
 interface TestimonialsSectionProps {
