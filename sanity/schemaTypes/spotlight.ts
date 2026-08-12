@@ -21,35 +21,50 @@ export const spotlightType = defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    // Tag Field
     defineField({
-      name: 'tag',
-      title: 'Tag Line',
+      name: 'tagPreset',
+      title: 'Tag Line Preset',
       type: 'string',
       options: {
         list: [
           { title: 'AUTHOR SPOTLIGHT', value: 'AUTHOR SPOTLIGHT' },
           { title: 'BUSINESS SPOTLIGHT', value: 'BUSINESS SPOTLIGHT' },
+          { title: 'Other (Write Custom)', value: 'OTHER' },
         ],
       },
-      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'tagCustom',
+      title: 'Custom Tag Line',
+      type: 'string',
+      hidden: ({ parent }) => parent?.tagPreset !== 'OTHER',
     }),
 
+    // Title Prefix Field
     defineField({
-      name: 'titlePrefix',
-      title: 'Title Prefix',
+      name: 'titlePrefixPreset',
+      title: 'Title Prefix Preset',
       type: 'string',
       options: {
         list: [
           { title: 'We Spotlight', value: 'We Spotlight' },
           { title: "Let's Put Your", value: "Let's Put Your" },
+          { title: 'Other (Write Custom)', value: 'OTHER' },
         ],
       },
-      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'titlePrefixCustom',
+      title: 'Custom Title Prefix',
+      type: 'string',
+      hidden: ({ parent }) => parent?.titlePrefixPreset !== 'OTHER',
     }),
 
+    // Title Highlight Field
     defineField({
-      name: 'titleHighlight',
-      title: 'Title Highlighted Text',
+      name: 'titleHighlightPreset',
+      title: 'Title Highlighted Text Preset',
       type: 'string',
       options: {
         list: [
@@ -58,16 +73,22 @@ export const spotlightType = defineType({
             title: 'Business In The Spotlight',
             value: 'Business In The Spotlight',
           },
+          { title: 'Other (Write Custom)', value: 'OTHER' },
         ],
       },
-      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'titleHighlightCustom',
+      title: 'Custom Title Highlighted Text',
+      type: 'string',
+      hidden: ({ parent }) => parent?.titleHighlightPreset !== 'OTHER',
     }),
 
+    // Description Field
     defineField({
-      name: 'description',
-      title: 'Description',
-      type: 'text',
-      rows: 3,
+      name: 'descriptionPreset',
+      title: 'Description Preset',
+      type: 'string',
       options: {
         list: [
           {
@@ -80,14 +101,22 @@ export const spotlightType = defineType({
             value:
               'We feature your business to a wider audience, build your credibility, and help you attract more customers.',
           },
+          { title: 'Other (Write Custom)', value: 'OTHER' },
         ],
       },
-      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'descriptionCustom',
+      title: 'Custom Description',
+      type: 'text',
+      rows: 3,
+      hidden: ({ parent }) => parent?.descriptionPreset !== 'OTHER',
     }),
 
+    // CTA Button Text Field
     defineField({
-      name: 'ctaButtonText',
-      title: 'CTA Button Text',
+      name: 'ctaButtonTextPreset',
+      title: 'CTA Button Text Preset',
       type: 'string',
       options: {
         list: [
@@ -99,9 +128,15 @@ export const spotlightType = defineType({
             title: 'Book Your Business Spotlight',
             value: 'Book Your Business Spotlight',
           },
+          { title: 'Other (Write Custom)', value: 'OTHER' },
         ],
       },
-      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'ctaButtonTextCustom',
+      title: 'Custom CTA Button Text',
+      type: 'string',
+      hidden: ({ parent }) => parent?.ctaButtonTextPreset !== 'OTHER',
     }),
 
     defineField({
@@ -112,6 +147,7 @@ export const spotlightType = defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    // Hero Highlights Array
     defineField({
       name: 'heroHighlights',
       title: 'Hero Highlights',
@@ -138,8 +174,8 @@ export const spotlightType = defineType({
               validation: (Rule) => Rule.required(),
             }),
             defineField({
-              name: 'label',
-              title: 'Label',
+              name: 'labelPreset',
+              title: 'Label Preset',
               type: 'string',
               options: {
                 list: [
@@ -151,15 +187,22 @@ export const spotlightType = defineType({
                     value: 'Reach More Customers',
                   },
                   { title: 'Grow Your Business', value: 'Grow Your Business' },
+                  { title: 'Other (Write Custom)', value: 'OTHER' },
                 ],
               },
-              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'labelCustom',
+              title: 'Custom Label',
+              type: 'string',
+              hidden: ({ parent }) => parent?.labelPreset !== 'OTHER',
             }),
           ],
         },
       ],
     }),
 
+    // Pricing Features Array
     defineField({
       name: 'pricingFeatures',
       title: 'Pricing Features',
@@ -205,6 +248,7 @@ export const spotlightType = defineType({
       ],
     }),
 
+    // How It Works Steps
     defineField({
       name: 'steps',
       title: 'How It Works Steps',
@@ -239,8 +283,8 @@ export const spotlightType = defineType({
               },
             }),
             defineField({
-              name: 'title',
-              title: 'Title',
+              name: 'titlePreset',
+              title: 'Title Preset',
               type: 'string',
               options: {
                 list: [
@@ -252,14 +296,20 @@ export const spotlightType = defineType({
                     title: 'We Publish & Promote',
                     value: 'We Publish & Promote',
                   },
+                  { title: 'Other (Write Custom)', value: 'OTHER' },
                 ],
               },
             }),
             defineField({
-              name: 'description',
-              title: 'Description',
-              type: 'text',
-              rows: 2,
+              name: 'titleCustom',
+              title: 'Custom Title',
+              type: 'string',
+              hidden: ({ parent }) => parent?.titlePreset !== 'OTHER',
+            }),
+            defineField({
+              name: 'descriptionPreset',
+              title: 'Description Preset',
+              type: 'string',
               options: {
                 list: [
                   {
@@ -289,17 +339,26 @@ export const spotlightType = defineType({
                     value:
                       'Your spotlight goes live and we promote it to our audience.',
                   },
+                  { title: 'Other (Write Custom)', value: 'OTHER' },
                 ],
               },
+            }),
+            defineField({
+              name: 'descriptionCustom',
+              title: 'Custom Description',
+              type: 'text',
+              rows: 2,
+              hidden: ({ parent }) => parent?.descriptionPreset !== 'OTHER',
             }),
           ],
         },
       ],
     }),
 
+    // Banner Fields
     defineField({
-      name: 'bannerTitle',
-      title: 'Banner Title',
+      name: 'bannerTitlePreset',
+      title: 'Banner Title Preset',
       type: 'string',
       options: {
         list: [
@@ -308,13 +367,20 @@ export const spotlightType = defineType({
             value: 'Ready to Get Spotlighted?',
           },
           { title: 'Ready To Get Noticed?', value: 'Ready To Get Noticed?' },
+          { title: 'Other (Write Custom)', value: 'OTHER' },
         ],
       },
     }),
+    defineField({
+      name: 'bannerTitleCustom',
+      title: 'Custom Banner Title',
+      type: 'string',
+      hidden: ({ parent }) => parent?.bannerTitlePreset !== 'OTHER',
+    }),
 
     defineField({
-      name: 'bannerSubtitle',
-      title: 'Banner Subtitle',
+      name: 'bannerSubtitlePreset',
+      title: 'Banner Subtitle Preset',
       type: 'string',
       options: {
         list: [
@@ -327,13 +393,20 @@ export const spotlightType = defineType({
             title: 'Business Banner Subtitle',
             value: 'Give your business the visibility it deserves.',
           },
+          { title: 'Other (Write Custom)', value: 'OTHER' },
         ],
       },
     }),
+    defineField({
+      name: 'bannerSubtitleCustom',
+      title: 'Custom Banner Subtitle',
+      type: 'string',
+      hidden: ({ parent }) => parent?.bannerSubtitlePreset !== 'OTHER',
+    }),
 
     defineField({
-      name: 'bannerCta',
-      title: 'Banner CTA Text',
+      name: 'bannerCtaPreset',
+      title: 'Banner CTA Text Preset',
       type: 'string',
       options: {
         list: [
@@ -345,8 +418,15 @@ export const spotlightType = defineType({
             title: 'Book Your Business Spotlight Now →',
             value: 'Book Your Business Spotlight Now →',
           },
+          { title: 'Other (Write Custom)', value: 'OTHER' },
         ],
       },
+    }),
+    defineField({
+      name: 'bannerCtaCustom',
+      title: 'Custom Banner CTA Text',
+      type: 'string',
+      hidden: ({ parent }) => parent?.bannerCtaPreset !== 'OTHER',
     }),
   ],
 })

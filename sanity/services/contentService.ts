@@ -10,7 +10,6 @@ import { TestimonialItem } from '@/app/types/testimonial'
 import { SpotlightData } from '@/app/types/spotlight'
 import { getIconByName } from '@/app/utils/iconMapper'
 
-
 export interface PortfolioFilterOptions {
   category?: string
   sort?: 'latest' | 'oldest' | 'title'
@@ -229,26 +228,26 @@ export async function fetchSpotlightData(
   category: 'Author' | 'Business',
 ): Promise<SpotlightData | null> {
   const query = groq`*[_type == "spotlight" && category == $category][0] {
-    tag,
-    titlePrefix,
-    titleHighlight,
-    description,
-    ctaButtonText,
+    "tag": select(tagPreset == "OTHER" => tagCustom, tagPreset),
+    "titlePrefix": select(titlePrefixPreset == "OTHER" => titlePrefixCustom, titlePrefixPreset),
+    "titleHighlight": select(titleHighlightPreset == "OTHER" => titleHighlightCustom, titleHighlightPreset),
+    "description": select(descriptionPreset == "OTHER" => descriptionCustom, descriptionPreset),
+    "ctaButtonText": select(ctaButtonTextPreset == "OTHER" => ctaButtonTextCustom, ctaButtonTextPreset),
     "heroImage": heroImage.asset->url,
     heroHighlights[] {
       icon,
-      label
+      "label": select(labelPreset == "OTHER" => labelCustom, labelPreset)
     },
     pricingFeatures,
     steps[] {
       step,
       icon,
-      title,
-      description
+      "title": select(titlePreset == "OTHER" => titleCustom, titlePreset),
+      "description": select(descriptionPreset == "OTHER" => descriptionCustom, descriptionPreset)
     },
-    bannerTitle,
-    bannerSubtitle,
-    bannerCta
+    "bannerTitle": select(bannerTitlePreset == "OTHER" => bannerTitleCustom, bannerTitlePreset),
+    "bannerSubtitle": select(bannerSubtitlePreset == "OTHER" => bannerSubtitleCustom, bannerSubtitlePreset),
+    "bannerCta": select(bannerCtaPreset == "OTHER" => bannerCtaCustom, bannerCtaPreset)
   }`
 
   const data = await client.fetch(
@@ -261,21 +260,21 @@ export async function fetchSpotlightData(
 
   return {
     content: {
-      tag: data.tag,
-      titlePrefix: data.titlePrefix,
-      titleHighlight: data.titleHighlight,
-      description: data.description,
-      ctaButtonText: data.ctaButtonText,
+      tag: data.tag || '',
+      titlePrefix: data.titlePrefix || '',
+      titleHighlight: data.titleHighlight || '',
+      description: data.description || '',
+      ctaButtonText: data.ctaButtonText || '',
       heroImage: data.heroImage || '',
       pricingFeatures: data.pricingFeatures || [],
       heroHighlights:
         data.heroHighlights?.map((item: { icon: string; label: string }) => ({
           icon: getIconByName(item.icon),
-          label: item.label,
+          label: item.label || '',
         })) || [],
-      bannerTitle: data.bannerTitle,
-      bannerSubtitle: data.bannerSubtitle,
-      bannerCta: data.bannerCta,
+      bannerTitle: data.bannerTitle || '',
+      bannerSubtitle: data.bannerSubtitle || '',
+      bannerCta: data.bannerCta || '',
     },
     steps:
       data.steps?.map(
@@ -287,8 +286,8 @@ export async function fetchSpotlightData(
         }) => ({
           step: item.step,
           icon: getIconByName(item.icon),
-          title: item.title,
-          description: item.description,
+          title: item.title || '',
+          description: item.description || '',
         }),
       ) || [],
   }
