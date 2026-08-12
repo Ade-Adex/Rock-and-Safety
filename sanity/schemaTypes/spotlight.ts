@@ -142,9 +142,9 @@ export const spotlightType = defineType({
     defineField({
       name: 'ctaButtonUrl',
       title: 'CTA Button Link (URL)',
-      type: 'url',
+      type: 'string', // Changed from 'url' to 'string' so relative or external links won't be rejected
       description:
-        'Link for the Hero and Pricing CTA buttons (e.g., Selar checkout link)',
+        'Full URL (e.g. https://selar.co/your-link) or internal path (e.g. /pricing)',
     }),
 
     defineField({
@@ -440,8 +440,8 @@ export const spotlightType = defineType({
     defineField({
       name: 'bannerCtaUrl',
       title: 'Banner CTA Link (URL)',
-      type: 'url',
-      description: 'Link for the Bottom Banner CTA button',
+      type: 'string', // Changed from 'url' to 'string'
+      description: 'Full URL or internal path for the bottom banner',
     }),
   ],
 })
