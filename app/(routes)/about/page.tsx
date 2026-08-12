@@ -43,7 +43,7 @@ export default function AboutPage() {
         <span className="text-xs font-extrabold uppercase tracking-widest text-accent-gold">
           WHO WE ARE
         </span>
-        <h1 className="text-4xl sm:text-5xl font-black text-foreground tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-black text-foreground tracking-tight">
           Empowering Lives Through Faith, Community & Purpose
         </h1>
         <p className="text-muted text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
