@@ -25,7 +25,7 @@ export default function SpotlightSteps({ steps }: SpotlightStepsProps) {
               key={st.step}
               className="flex flex-col items-center text-center p-6 bg-card-bg border border-card-border rounded-xl space-y-4 relative group"
             >
-              <span className="w-7 h-7 rounded-full bg-[#0F3A2E] text-white text-xs font-bold flex items-center justify-center">
+              <span className="w-7 h-7 rounded-full bg-brand-deep text-foreground text-xs font-bold flex items-center justify-center">
                 {st.step}
               </span>
 

@@ -58,7 +58,7 @@ export default function SpotlightHero({
           <div className="pt-4 space-y-2">
             <Link
               href="#pricing"
-              className="inline-flex items-center gap-2 bg-[#0F3A2E] hover:bg-[#0B2C23] text-white font-extrabold text-sm px-6 py-3.5 rounded-lg transition-all shadow-md"
+              className="inline-flex items-center gap-2 bg-brand-deep hover:bg-brand-deep-hover text-foreground font-extrabold text-sm px-6 py-3.5 rounded-lg transition-all shadow-md"
             >
               <FiCreditCard className="w-4 h-4" />
               {content.ctaButtonText}

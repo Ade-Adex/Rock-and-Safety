@@ -80,7 +80,7 @@ export default function SpotlightPricing({
       <div className="pt-4 flex flex-col items-center gap-2">
         <button
           type="button"
-          className="inline-flex items-center gap-2 bg-[#0F3A2E] hover:bg-[#0B2C23] text-white font-extrabold text-sm sm:text-base px-8 py-4 rounded-xl transition-all shadow-lg active:scale-95 cursor-pointer"
+          className="inline-flex items-center gap-2 bg-brand-deep hover:bg-brand-deep-hover text-foreground font-extrabold text-sm sm:text-base px-8 py-4 rounded-xl transition-all shadow-lg active:scale-95 cursor-pointer"
         >
           <FiCreditCard className="w-5 h-5" />
           {ctaButtonText}

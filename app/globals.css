@@ -11,6 +11,10 @@
   --primary: #cca352;
   --secondary: #0d0e11;
   --primary-dark: #b88e3d;
+
+  /* Deep Brand Accent Tokens */
+  --brand-deep: #0f3a2e;
+  --brand-deep-hover: #0b2c23;
   
   /* Surface Tokens */
   --surface-white: #ffffff;
@@ -34,6 +38,9 @@
   --color-accent-gold: var(--primary);
   --color-gold-dark: var(--primary-dark);
   
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-deep-hover: var(--brand-deep-hover);
+
   --color-surface-white: var(--surface-white);
   --color-surface-white-muted: var(--surface-white-muted);
   --color-surface-white-border: var(--surface-white-border);
