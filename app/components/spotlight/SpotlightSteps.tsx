@@ -1,5 +1,5 @@
 import { FiArrowRight } from 'react-icons/fi'
-import { StepItem } from '@/app/data/spotlightData'
+import { StepItem } from '@/app/types/spotlight'
 
 interface SpotlightStepsProps {
   steps: StepItem[]
