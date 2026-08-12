@@ -10,19 +10,14 @@ interface PostBodyRendererProps {
   tableOfContents?: TocItem[]
 }
 
-const CHARACTER_LIMIT = 100
-
 export default function PostBodyRenderer({
   body,
-  tableOfContents,
+  tableOfContents = [],
 }: PostBodyRendererProps) {
-  // Track which section header is selected from the TOC
+  // 1. Default to the first Table of Contents item ID if available
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
-    null,
+    () => (tableOfContents.length > 0 ? tableOfContents[0].id : null),
   )
-
-  // Track if the current active section is expanded past 100 characters
-  const [isExpanded, setIsExpanded] = useState<boolean>(false)
 
   const handleSelectToc = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -30,16 +25,29 @@ export default function PostBodyRenderer({
   ) => {
     e.preventDefault()
     setSelectedSectionId(id)
-    setIsExpanded(false) // Reset expanded state on section switch
   }
 
-  // Extract pure text from PortableText children to calculate truncation
+  // 2. Find current TOC index and next item
+  const currentIndex = tableOfContents.findIndex(
+    (item) => item.id === selectedSectionId,
+  )
+  const hasNextSection =
+    currentIndex !== -1 && currentIndex < tableOfContents.length - 1
+  const nextSection = hasNextSection ? tableOfContents[currentIndex + 1] : null
+
+  const handleNextSection = () => {
+    if (nextSection) {
+      setSelectedSectionId(nextSection.id)
+    }
+  }
+
+  // Extract pure text from PortableText children
   const getBlockText = (block: PortableTextBlock): string => {
     if (!block.children || !Array.isArray(block.children)) return ''
     return block.children.map((child) => child.text || '').join('')
   }
 
-  // Find the selected section block and subsequent content blocks until next section heading
+  // Find the selected section block and subsequent content blocks until the next section heading
   const getActiveContentBlocks = () => {
     if (!selectedSectionId) return []
 
@@ -50,7 +58,7 @@ export default function PostBodyRenderer({
 
     const activeBlocks: PortableTextBlock[] = [body[selectedIndex]]
 
-    // Collect paragraph blocks following the selected heading until another heading is hit
+    // Collect paragraph/media blocks following the selected heading until another heading is encountered
     for (let i = selectedIndex + 1; i < body.length; i++) {
       const block = body[i]
       const style = 'style' in block ? (block.style as string) : ''
@@ -63,17 +71,6 @@ export default function PostBodyRenderer({
 
   const activeBlocks = getActiveContentBlocks()
 
-  // Calculate full combined string length of non-heading blocks in the active section
-  const combinedText = activeBlocks
-    .filter(
-      (b) => !['h1', 'h2', 'h3', 'h4'].includes((b.style as string) || ''),
-    )
-    .map(getBlockText)
-    .join(' ')
-
-  const isLongerThanLimit = combinedText.length > CHARACTER_LIMIT
-
-  // Custom renderer for truncating normal text blocks
   const customComponents: PortableTextComponents = {
     block: {
       h1: ({ children }) => (
@@ -91,30 +88,18 @@ export default function PostBodyRenderer({
           {children}
         </h3>
       ),
-      normal: ({ value, children }) => {
-        const text = getBlockText(value as PortableTextBlock)
-
-        if (!isExpanded && text.length > CHARACTER_LIMIT) {
-          return (
-            <p className="text-sm sm:text-base text-muted leading-relaxed mb-4">
-              {text.slice(0, CHARACTER_LIMIT)}...
-            </p>
-          )
-        }
-
-        return (
-          <p className="text-sm sm:text-base text-muted leading-relaxed mb-4">
-            {children}
-          </p>
-        )
-      },
+      normal: ({ children }) => (
+        <p className="text-sm sm:text-base text-muted leading-relaxed mb-4">
+          {children}
+        </p>
+      ),
     },
   }
 
   return (
     <div>
       {/* Table of Contents */}
-      {tableOfContents && tableOfContents.length > 0 && (
+      {tableOfContents.length > 0 && (
         <div className="p-6 bg-card-bg rounded-2xl border border-card-border mb-8 shadow-sm">
           <h3 className="text-base font-bold text-foreground mb-4">
             Table of Contents
@@ -140,7 +125,7 @@ export default function PostBodyRenderer({
         </div>
       )}
 
-      {/* Selected Section Body Content */}
+      {/* Selected Section Content */}
       {activeBlocks.length > 0 ? (
         <div className="p-6 bg-card-bg/40 border border-card-border rounded-2xl">
           <div className="space-y-4">
@@ -153,14 +138,15 @@ export default function PostBodyRenderer({
             ))}
           </div>
 
-          {/* Single Continue Reading button for the active section */}
-          {isLongerThanLimit && (
+          {/* Navigation Button to Next Section */}
+          {hasNextSection && nextSection && (
             <button
               type="button"
-              onClick={() => setIsExpanded((prev) => !prev)}
-              className="mt-4 text-xs font-bold text-primary bg-card-bg border border-card-border px-4 py-2 rounded-xl hover:bg-primary hover:text-dark transition-all inline-flex items-center gap-2"
+              onClick={handleNextSection}
+              className="mt-6 text-xs font-bold text-primary bg-card-bg border border-card-border px-4 py-2.5 rounded-xl hover:bg-primary hover:text-dark transition-all inline-flex items-center gap-2 cursor-pointer shadow-sm"
             >
-              {isExpanded ? 'Show Less ↑' : 'Continue Reading →'}
+              <span>Next: {nextSection.text}</span>
+              <span>→</span>
             </button>
           )}
         </div>
