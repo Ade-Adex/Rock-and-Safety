@@ -59,13 +59,6 @@ export default function NavLinks({
 
                 {isOpen && (
                   <div className="pl-4 mt-1 flex flex-col space-y-2 border-l border-card-border ml-2">
-                    <Link
-                      href={link.href}
-                      onClick={onLinkClick}
-                      className="text-muted hover:text-primary text-sm py-1 font-medium"
-                    >
-                      All Portfolio
-                    </Link>
                     {link.subLinks?.map((sub) => {
                       const SubIcon = sub.icon
                       return (
