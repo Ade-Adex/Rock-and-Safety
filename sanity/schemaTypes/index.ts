@@ -6,6 +6,7 @@ import { serviceType } from './service'
 import { statType } from './stat'
 import { teamType } from './team'
 import { testimonialType } from './testimonial'
+import { spotlightType } from './spotlight'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -16,5 +17,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     statType,
     teamType,
     testimonialType,
+    spotlightType,
   ],
 }

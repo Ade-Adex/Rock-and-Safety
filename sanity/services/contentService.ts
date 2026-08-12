@@ -7,6 +7,9 @@ import { ServiceItem } from '@/app/types/service'
 import { StatItem } from '@/app/types/stat'
 import { TeamMember } from '@/app/types/team'
 import { TestimonialItem } from '@/app/types/testimonial'
+import { SpotlightData } from '@/app/types/spotlight'
+import { getIconByName } from '@/app/utils/iconMapper'
+
 
 export interface PortfolioFilterOptions {
   category?: string
@@ -220,4 +223,73 @@ export async function fetchTestimonials(): Promise<TestimonialItem[]> {
     {},
     { next: { revalidate: 0 } },
   )
+}
+
+export async function fetchSpotlightData(
+  category: 'Author' | 'Business',
+): Promise<SpotlightData | null> {
+  const query = groq`*[_type == "spotlight" && category == $category][0] {
+    tag,
+    titlePrefix,
+    titleHighlight,
+    description,
+    ctaButtonText,
+    "heroImage": heroImage.asset->url,
+    heroHighlights[] {
+      icon,
+      label
+    },
+    pricingFeatures,
+    steps[] {
+      step,
+      icon,
+      title,
+      description
+    },
+    bannerTitle,
+    bannerSubtitle,
+    bannerCta
+  }`
+
+  const data = await client.fetch(
+    query,
+    { category },
+    { next: { revalidate: 0 } },
+  )
+
+  if (!data) return null
+
+  return {
+    content: {
+      tag: data.tag,
+      titlePrefix: data.titlePrefix,
+      titleHighlight: data.titleHighlight,
+      description: data.description,
+      ctaButtonText: data.ctaButtonText,
+      heroImage: data.heroImage || '',
+      pricingFeatures: data.pricingFeatures || [],
+      heroHighlights:
+        data.heroHighlights?.map((item: { icon: string; label: string }) => ({
+          icon: getIconByName(item.icon),
+          label: item.label,
+        })) || [],
+      bannerTitle: data.bannerTitle,
+      bannerSubtitle: data.bannerSubtitle,
+      bannerCta: data.bannerCta,
+    },
+    steps:
+      data.steps?.map(
+        (item: {
+          step: string
+          icon: string
+          title: string
+          description: string
+        }) => ({
+          step: item.step,
+          icon: getIconByName(item.icon),
+          title: item.title,
+          description: item.description,
+        }),
+      ) || [],
+  }
 }

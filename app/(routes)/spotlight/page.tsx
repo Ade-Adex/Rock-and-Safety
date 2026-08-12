@@ -1,8 +1,5 @@
-import { redirect } from 'next/navigation'
-import {
-  getSpotlightContent,
-  getSpotlightSteps,
-} from '@/app/data/spotlightData'
+import { redirect, notFound } from 'next/navigation'
+import { fetchSpotlightData } from '@/sanity/services/contentService'
 import SpotlightHero from '@/app/components/spotlight/SpotlightHero'
 import SpotlightPricing from '@/app/components/spotlight/SpotlightPricing'
 import SpotlightSteps from '@/app/components/spotlight/SpotlightSteps'
@@ -28,11 +25,16 @@ export default async function SpotlightPage({ searchParams }: PageProps) {
   }
 
   const isAuthor = category === 'Author'
-  const content = getSpotlightContent(isAuthor)
-  const steps = getSpotlightSteps(isAuthor)
+  const spotlightData = await fetchSpotlightData(category)
+
+  if (!spotlightData) {
+    notFound()
+  }
+
+  const { content, steps } = spotlightData
 
   return (
-    <div className="min-h-screen bg-background text-foreground px-4 sm:px-8 md:px-12 lg:px-16 max-w-7xl mx-auto space-y-20">
+    <div className="min-h-screen bg-background text-foreground px-4 sm:px-8 md:px-12 lg:px-16 max-w-7xl mx-auto space-y-20 py-8">
       <SpotlightHero content={content} isAuthor={isAuthor} />
       <SpotlightPricing
         pricingFeatures={content.pricingFeatures}
