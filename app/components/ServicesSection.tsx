@@ -19,7 +19,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {services.map((service) => {
-          const projectDetailsUrl = `/portfolios?service=${encodeURIComponent(service.title)}`
+          const projectDetailsUrl = `/portfolio?service=${encodeURIComponent(service.title)}`
 
           return (
             <div
