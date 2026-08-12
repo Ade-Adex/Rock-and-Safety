@@ -43,6 +43,7 @@ export interface PostItem {
   imageUrl?: string
   date?: string
   publishedAt?: string
+  scheduleDate?: string
   updatedAt?: string
   isFeatured?: boolean
   isLatest?: boolean

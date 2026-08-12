@@ -44,6 +44,22 @@ export const postType = defineType({
       initialValue: () => new Date().toISOString(),
       validation: (Rule) => Rule.required(),
     }),
+
+    defineField({
+      name: 'scheduleDate',
+      title: 'Scheduled Publish Date',
+      description:
+        'Select the date and time when this post should start showing on the website.',
+      type: 'datetime',
+      initialValue: () => new Date().toISOString(),
+      options: {
+        dateFormat: 'YYYY-MM-DD',
+        timeFormat: 'HH:mm',
+        timeStep: 15,
+      },
+      validation: (Rule) =>
+        Rule.required().error('A schedule date is required.'),
+    }),
     defineField({
       name: 'readingTime',
       title: 'Reading Time (e.g. 7 min read)',

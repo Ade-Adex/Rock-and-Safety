@@ -19,8 +19,9 @@ const POST_FIELDS = groq`
   _id,
   title,
   "slug": slug.current,
+  scheduleDate,
   publishedAt,
-  "date": coalesce(publishedAt, _createdAt),
+  "date": coalesce(scheduleDate, publishedAt, _createdAt),
   description,
   "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
   "category": coalesce(category->title, category),
@@ -45,21 +46,22 @@ const POST_FIELDS = groq`
     "text": children[0].text,
     "level": style
   },
-  "relatedArticles": *[_type == "post" && category == ^.category && _id != ^._id][0..1]{
+  "relatedArticles": *[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && category == ^.category && _id != ^._id][0..1]{
     _id,
     title,
     "slug": slug.current,
     "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
-    "date": coalesce(publishedAt, _createdAt)
+    "date": coalesce(scheduleDate, publishedAt, _createdAt)
   }
 `
 
 export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
   if (!slug || typeof slug !== 'string') return null
 
-  const query = groq`*[_type == "post" && (slug.current == $slug || _id == $slug) && publishedAt <= now() && !(_id in path("drafts.**"))][0] {
-  ${POST_FIELDS}
-}`
+  // Added scheduleDate check so users can't access future post URLs prematurely
+  const query = groq`*[_type == "post" && (slug.current == $slug || _id == $slug) && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))][0] {
+    ${POST_FIELDS}
+  }`
 
   return await client.fetch<PostItem | null>(
     query,
@@ -69,13 +71,14 @@ export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
 }
 
 export async function fetchRecentPosts(limit: number = 4): Promise<PostItem[]> {
- const query = groq`*[_type == "post" && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc)[0...$limit] {
-  _id,
-  title,
-  "slug": coalesce(slug.current, _id),
-  "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
-  "date": coalesce(publishedAt, _createdAt)
-}`
+  // Added scheduleDate check
+  const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc)[0...$limit] {
+    _id,
+    title,
+    "slug": coalesce(slug.current, _id),
+    "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
+    "date": coalesce(scheduleDate, publishedAt, _createdAt)
+  }`
   return await client.fetch<PostItem[]>(
     query,
     { limit },
@@ -84,7 +87,8 @@ export async function fetchRecentPosts(limit: number = 4): Promise<PostItem[]> {
 }
 
 export async function fetchCategoryCounts(): Promise<CategoryCount[]> {
-  const query = groq`*[_type == "post" && defined(category)] {
+  // Filter category counts by active scheduled posts only
+  const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && defined(category)] {
     "category": coalesce(category->title, category)
   }`
   const posts = await client.fetch<{ category: string }[]>(
@@ -110,7 +114,7 @@ export async function fetchFilteredPosts(
 
   const conditions: string[] = [
     '_type == "post"',
-    'publishedAt <= now()',
+    'coalesce(scheduleDate, publishedAt, _createdAt) <= now()',
     '!(_id in path("drafts.**"))',
   ]
   const params: Record<string, unknown> = { limit }
@@ -131,8 +135,8 @@ export async function fetchFilteredPosts(
   const whereClause = conditions.join(' && ')
   const orderClause =
     sort === 'oldest'
-      ? '| order(publishedAt asc, _createdAt asc)'
-      : '| order(publishedAt desc, _createdAt desc)'
+      ? '| order(coalesce(scheduleDate, publishedAt, _createdAt) asc)'
+      : '| order(coalesce(scheduleDate, publishedAt, _createdAt) desc)'
 
   const query = groq`*[${whereClause}] ${orderClause}[0...$limit] {
     ${POST_FIELDS}
@@ -141,6 +145,28 @@ export async function fetchFilteredPosts(
   return await client.fetch<PostItem[]>(query, params, {
     next: { revalidate: 0 },
   })
+}
+
+export async function fetchPosts(): Promise<PostItem[]> {
+  // Added scheduleDate check & dynamic order
+  const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc) { ${POST_FIELDS} }`
+  return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
+}
+
+export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
+  // Added scheduleDate check
+  const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc)[0...$limit] { ${POST_FIELDS} }`
+  return await client.fetch<PostItem[]>(
+    query,
+    { limit },
+    { next: { revalidate: 0 } },
+  )
+}
+
+export async function fetchFeaturedPosts(): Promise<PostItem[]> {
+  // Added scheduleDate check
+  const query = groq`*[_type == "post" && isFeatured == true && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc) { ${POST_FIELDS} }`
+  return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchFaqs(): Promise<FaqItem[]> {
@@ -172,25 +198,6 @@ export async function fetchPortfolio(
   return await client.fetch<PortfolioItem[]>(query, params, {
     next: { revalidate: 0 },
   })
-}
-
-export async function fetchPosts(): Promise<PostItem[]> {
-  const query = groq`*[_type == "post" && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc) { ${POST_FIELDS} }`
-  return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
-}
-
-export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
- const query = groq`*[_type == "post" && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc)[0...$limit] { ${POST_FIELDS} }`
-  return await client.fetch<PostItem[]>(
-    query,
-    { limit },
-    { next: { revalidate: 0 } },
-  )
-}
-
-export async function fetchFeaturedPosts(): Promise<PostItem[]> {
-  const query = groq`*[_type == "post" && isFeatured == true && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc) { ${POST_FIELDS} }`
-  return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
 }
 
 export async function fetchServices(): Promise<ServiceItem[]> {
