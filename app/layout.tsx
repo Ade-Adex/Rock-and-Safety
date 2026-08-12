@@ -1,7 +1,7 @@
-import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import AppWrapper from '@/app/layout/AppWrapper'
+import { siteMetadata } from './metadata'
 import './globals.css'
 
 const geistSans = Geist({
@@ -14,15 +14,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-  title:
-    'Rock & Safety Marketing Hub | Professional Safety & Marketing Solutions',
-  description:
-    'Your trusted partner for comprehensive safety solutions, strategic marketing, and industry-leading professional services.',
-  icons: {
-    icon: '/favicon.ico',
-  },
-}
+export const metadata = siteMetadata
 
 export default function RootLayout({
   children,
