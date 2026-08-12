@@ -36,15 +36,22 @@ export default async function SpotlightPage({ searchParams }: PageProps) {
   return (
     <div className="min-h-screen bg-background text-foreground px-4 sm:px-8 md:px-12 lg:px-16 max-w-7xl mx-auto space-y-20 py-8">
       <SpotlightHero content={content} isAuthor={isAuthor} />
+
+      {/* Added ctaButtonUrl prop */}
       <SpotlightPricing
         pricingFeatures={content.pricingFeatures}
         ctaButtonText={content.ctaButtonText}
+        ctaButtonUrl={content.ctaButtonUrl}
       />
+
       <SpotlightSteps steps={steps} />
+
+      {/* Added ctaUrl prop */}
       <SpotlightBanner
         title={content.bannerTitle}
         subtitle={content.bannerSubtitle}
         ctaText={content.bannerCta}
+        ctaUrl={content.bannerCtaUrl}
       />
     </div>
   )

@@ -140,6 +140,14 @@ export const spotlightType = defineType({
     }),
 
     defineField({
+      name: 'ctaButtonUrl',
+      title: 'CTA Button Link (URL)',
+      type: 'url',
+      description:
+        'Link for the Hero and Pricing CTA buttons (e.g., Selar checkout link)',
+    }),
+
+    defineField({
       name: 'heroImage',
       title: 'Hero Main Image',
       type: 'image',
@@ -427,6 +435,13 @@ export const spotlightType = defineType({
       title: 'Custom Banner CTA Text',
       type: 'string',
       hidden: ({ parent }) => parent?.bannerCtaPreset !== 'OTHER',
+    }),
+
+    defineField({
+      name: 'bannerCtaUrl',
+      title: 'Banner CTA Link (URL)',
+      type: 'url',
+      description: 'Link for the Bottom Banner CTA button',
     }),
   ],
 })

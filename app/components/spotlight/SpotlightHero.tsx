@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { FiCreditCard, FiLock } from 'react-icons/fi'
-import { SpotlightContent } from '@/app/data/spotlightData'
+import { SpotlightContent } from '@/app/types/spotlight'
 
 interface SpotlightHeroProps {
   content: SpotlightContent
@@ -13,7 +13,7 @@ export default function SpotlightHero({
   isAuthor,
 }: SpotlightHeroProps) {
   return (
-    <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-4">
+    <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
       {/* Left Column */}
       <div className="lg:col-span-6 space-y-6">
         <div className="flex items-center gap-2">
@@ -54,21 +54,24 @@ export default function SpotlightHero({
           })}
         </div>
 
-        {!isAuthor && (
-          <div className="pt-4 space-y-2">
-            <Link
-              href="#pricing"
-              className="inline-flex items-center gap-2 bg-brand-deep hover:bg-brand-deep-hover text-foreground font-extrabold text-sm px-6 py-3.5 rounded-lg transition-all shadow-md"
-            >
-              <FiCreditCard className="w-4 h-4" />
-              {content.ctaButtonText}
-            </Link>
-            <div className="flex items-center gap-1.5 text-xs text-muted">
-              <FiLock className="w-3.5 h-3.5 text-accent-gold" />
-              <span>Secure payment powered by Selar</span>
-            </div>
+        {/* CTA Button Block - Rendered for both Author and Business */}
+        <div className="pt-4 space-y-2">
+          <Link
+            href={content.ctaButtonUrl || '#pricing'}
+            target={
+              content.ctaButtonUrl?.startsWith('http') ? '_blank' : '_self'
+            }
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-brand-deep hover:bg-brand-deep-hover text-foreground font-extrabold text-sm px-6 py-3.5 rounded-lg transition-all shadow-md"
+          >
+            <FiCreditCard className="w-4 h-4" />
+            {content.ctaButtonText}
+          </Link>
+          <div className="flex items-center gap-1.5 text-xs text-muted">
+            <FiLock className="w-3.5 h-3.5 text-accent-gold" />
+            <span>Secure payment powered by Selar</span>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Right Column Image */}

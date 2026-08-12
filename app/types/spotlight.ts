@@ -18,12 +18,14 @@ export interface SpotlightContent {
   titleHighlight: string
   description: string
   ctaButtonText: string
+  ctaButtonUrl?: string // Added
   heroHighlights: HeroHighlight[]
   heroImage: string
   pricingFeatures: string[]
   bannerTitle: string
   bannerSubtitle: string
   bannerCta: string
+  bannerCtaUrl?: string // Added
 }
 
 export interface SpotlightData {

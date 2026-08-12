@@ -233,6 +233,7 @@ export async function fetchSpotlightData(
     "titleHighlight": select(titleHighlightPreset == "OTHER" => titleHighlightCustom, titleHighlightPreset),
     "description": select(descriptionPreset == "OTHER" => descriptionCustom, descriptionPreset),
     "ctaButtonText": select(ctaButtonTextPreset == "OTHER" => ctaButtonTextCustom, ctaButtonTextPreset),
+    ctaButtonUrl, // Added
     "heroImage": heroImage.asset->url,
     heroHighlights[] {
       icon,
@@ -247,7 +248,8 @@ export async function fetchSpotlightData(
     },
     "bannerTitle": select(bannerTitlePreset == "OTHER" => bannerTitleCustom, bannerTitlePreset),
     "bannerSubtitle": select(bannerSubtitlePreset == "OTHER" => bannerSubtitleCustom, bannerSubtitlePreset),
-    "bannerCta": select(bannerCtaPreset == "OTHER" => bannerCtaCustom, bannerCtaPreset)
+    "bannerCta": select(bannerCtaPreset == "OTHER" => bannerCtaCustom, bannerCtaPreset),
+    bannerCtaUrl // Added
   }`
 
   const data = await client.fetch(
@@ -265,6 +267,7 @@ export async function fetchSpotlightData(
       titleHighlight: data.titleHighlight || '',
       description: data.description || '',
       ctaButtonText: data.ctaButtonText || '',
+      ctaButtonUrl: data.ctaButtonUrl || '#pricing', // Fallback
       heroImage: data.heroImage || '',
       pricingFeatures: data.pricingFeatures || [],
       heroHighlights:
@@ -275,6 +278,7 @@ export async function fetchSpotlightData(
       bannerTitle: data.bannerTitle || '',
       bannerSubtitle: data.bannerSubtitle || '',
       bannerCta: data.bannerCta || '',
+      bannerCtaUrl: data.bannerCtaUrl || '#pricing', // Fallback
     },
     steps:
       data.steps?.map(
