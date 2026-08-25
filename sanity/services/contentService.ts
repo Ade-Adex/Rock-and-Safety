@@ -15,6 +15,36 @@ export interface PortfolioFilterOptions {
   sort?: 'latest' | 'oldest' | 'title'
 }
 
+/** Raw shape returned by the spotlight GROQ query before icon mapping */
+interface SpotlightRawHighlight {
+  icon: string
+  label: string
+}
+
+interface SpotlightRawStep {
+  step: string
+  icon: string
+  title: string
+  description: string
+}
+
+interface SpotlightRawData {
+  tag?: string
+  titlePrefix?: string
+  titleHighlight?: string
+  description?: string
+  ctaButtonText?: string
+  ctaButtonUrl?: string
+  heroImage?: string
+  heroHighlights?: SpotlightRawHighlight[]
+  pricingFeatures?: string[]
+  steps?: SpotlightRawStep[]
+  bannerTitle?: string
+  bannerSubtitle?: string
+  bannerCta?: string
+  bannerCtaUrl?: string
+}
+
 const POST_FIELDS = groq`
   _id,
   title,
@@ -115,7 +145,7 @@ export async function fetchCategoryCounts(): Promise<CategoryCount[]> {
     "category": coalesce(category->title, category->name, category)
   }`
   const posts = (
-    await safeFetch<{ category: string }>(
+    await safeFetch<{ category: string }[]>(
       query,
       {},
       { next: { revalidate: 0 } },
@@ -311,7 +341,7 @@ export async function fetchSpotlightData(
     bannerCtaUrl
   }`
 
-  const data = await safeFetch<any>(
+  const data = await safeFetch<SpotlightRawData>(
     query,
     { category },
     { next: { revalidate: 0 } },
