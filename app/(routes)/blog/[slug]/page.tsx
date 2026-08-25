@@ -12,6 +12,7 @@ import { RelatedPostSummary } from '@/app/types/post'
 import PostBodyRenderer from '@/app/components/blog/PostBodyRenderer'
 // import BlogAuthorBio from '@/app/components/blog/BlogAuthorBio'
 import BlogSidebar from '@/app/components/blog/BlogSidebar'
+import ShareButtons from '@/app/components/blog/ShareButtons'
 import { formatDate } from '@/app/lib/utils'
 
 interface BlogDetailsPageProps {
@@ -88,6 +89,14 @@ export default async function BlogDetailsPage({
     typeof post.category === 'string'
       ? post.category
       : (post.category as { title?: string } | undefined)?.title || null
+
+  // Absolute URL for sharing: prefer canonical, else build from origin
+  const shareUrl =
+    typeof post.canonicalUrl === 'string' && post.canonicalUrl
+      ? post.canonicalUrl
+      : `https://www.rockandsafety.com/blog/${encodeURIComponent(
+          decodedSlug,
+        )}`
 
   return (
     <main className="bg-dark min-h-screen text-foreground py-6 sm:py-10 px-4 sm:px-6 lg:px-12">
@@ -190,6 +199,11 @@ export default async function BlogDetailsPage({
               <div>⏱️ {post.readingTime || '7 min read'}</div>
             </div>
 
+            {/* Share Buttons */}
+            <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+              <ShareButtons title={post.title} url={shareUrl} compact />
+            </div>
+
             {post.imageUrl && typeof post.imageUrl === 'string' && (
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden mb-8 border border-card-border shadow-lg">
                 <Image
@@ -255,6 +269,21 @@ export default async function BlogDetailsPage({
 
             {/* Author Bio */}
             {/* <BlogAuthorBio author={post.author} /> */}
+
+            {/* Share / Feedback Row */}
+            <div className="py-6 border-t border-gray-800/60 border-b border-card-border mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-sm font-bold text-foreground">
+                    Enjoyed this article?
+                  </h4>
+                  <p className="text-xs text-muted mt-0.5">
+                    Share it with your network 👇
+                  </p>
+                </div>
+                <ShareButtons title={post.title} url={shareUrl} />
+              </div>
+            </div>
 
             {/* Related Articles */}
             {post.relatedArticles && post.relatedArticles.length > 0 && (
