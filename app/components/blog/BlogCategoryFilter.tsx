@@ -21,6 +21,17 @@ export default function BlogCategoryFilter({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
+  // Defensive: never show the same category twice, even if the incoming
+  // list contains duplicates with different casing / whitespace
+  const seen = new Set<string>()
+  const uniqueCategories = categories.filter((cat) => {
+    if (!cat) return false
+    const key = cat.trim().toLowerCase()
+    if (!key || seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -81,7 +92,7 @@ export default function BlogCategoryFilter({
 
         {dropdownOpen && (
           <div className="absolute top-full left-0 right-0 mt-2 bg-card-bg border border-card-border rounded-xl shadow-xl z-50 overflow-hidden py-2 divide-y divide-card-border animate-in fade-in slide-in-from-top-2 duration-200">
-            {categories.map((cat) => {
+            {uniqueCategories.map((cat) => {
               const isActive =
                 activeCategory.toLowerCase() === cat.toLowerCase()
               return (
@@ -106,7 +117,7 @@ export default function BlogCategoryFilter({
 
       {/* Desktop Flex Pills */}
       <div className="hidden sm:flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
-        {categories.map((cat) => {
+        {uniqueCategories.map((cat) => {
           const isActive = activeCategory.toLowerCase() === cat.toLowerCase()
           return (
             <Link key={cat} href={createFilterUrl(cat)}>

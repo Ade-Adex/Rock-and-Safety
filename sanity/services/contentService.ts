@@ -153,13 +153,22 @@ export async function fetchCategoryCounts(): Promise<CategoryCount[]> {
   ) ?? []
 
   const counts: Record<string, number> = {}
+  const displayNames: Record<string, string> = {}
   posts.forEach((item) => {
     if (item.category && typeof item.category === 'string') {
-      counts[item.category] = (counts[item.category] || 0) + 1
+      const raw = item.category.trim()
+      if (!raw) return
+      const key = raw.toLowerCase()
+      counts[key] = (counts[key] || 0) + 1
+      // Keep the first-seen spelling for display
+      if (!displayNames[key]) displayNames[key] = raw
     }
   })
 
-  return Object.entries(counts).map(([name, count]) => ({ name, count }))
+  return Object.entries(counts).map(([key, count]) => ({
+    name: displayNames[key] ?? key,
+    count,
+  }))
 }
 
 export async function fetchFilteredPosts(

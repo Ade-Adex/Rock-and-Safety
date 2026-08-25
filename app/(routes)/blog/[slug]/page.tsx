@@ -10,7 +10,7 @@ import {
 } from '@/sanity/services/contentService'
 import { RelatedPostSummary } from '@/app/types/post'
 import PostBodyRenderer from '@/app/components/blog/PostBodyRenderer'
-import BlogAuthorBio from '@/app/components/blog/BlogAuthorBio'
+// import BlogAuthorBio from '@/app/components/blog/BlogAuthorBio'
 import BlogSidebar from '@/app/components/blog/BlogSidebar'
 import { formatDate } from '@/app/lib/utils'
 

@@ -33,8 +33,18 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     fetchCategoryCounts(),
   ])
 
-  // Extract category names dynamically from Sanity and prepend 'All'
-  const categories = ['All', ...rawCategories.map((cat) => cat.name)]
+  // Extract category names dynamically from Sanity, dedupe (case-insensitive),
+  // and prepend 'All'
+  const categories = [
+    'All',
+    ...rawCategories
+      .map((cat) => cat.name)
+      .filter((name, i, arr) => {
+        if (!name) return false
+        const key = name.trim().toLowerCase()
+        return arr.findIndex((n) => n?.trim().toLowerCase() === key) === i
+      }),
+  ]
 
   const createSortUrl = (sort: string) => {
     const params = new URLSearchParams()

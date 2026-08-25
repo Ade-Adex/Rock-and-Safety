@@ -14,6 +14,17 @@ export default function BlogSidebar({
   recentPosts,
   services,
 }: BlogSidebarProps) {
+  // Defensive: never render the same category twice, even if the incoming
+  // list contains duplicates with different casing / whitespace
+  const seen = new Set<string>()
+  const uniqueCategories = categories.filter((cat) => {
+    if (!cat?.name) return false
+    const key = cat.name.trim().toLowerCase()
+    if (!key || seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+
   return (
     <aside className="lg:col-span-4 space-y-8">
       {/* Search Widget */}
@@ -40,7 +51,7 @@ export default function BlogSidebar({
           Categories
         </h3>
         <ul className="space-y-2.5 text-xs">
-          {categories.map((cat) => (
+          {uniqueCategories.map((cat) => (
             <li key={cat.name}>
               <Link
                 href={`/blog?category=${encodeURIComponent(cat.name)}`}
