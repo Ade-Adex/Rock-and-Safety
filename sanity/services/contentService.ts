@@ -1,5 +1,5 @@
 import { groq } from 'next-sanity'
-import { client } from '@/sanity/lib/client'
+import { safeFetch } from '@/sanity/lib/client'
 import { FaqItem } from '@/app/types/faq'
 import { PortfolioItem } from '@/app/types/portfolio'
 import { CategoryCount, PostFilterOptions, PostItem } from '@/app/types/post'
@@ -62,11 +62,13 @@ export async function fetchPostBySlug(slug: string): Promise<PostItem | null> {
     ${POST_FIELDS}
   }`
 
-  return await client.fetch<PostItem | null>(
-    query,
-    { slug },
-    { next: { revalidate: 0 } },
-  )
+  return (
+    await safeFetch<PostItem | null>(
+      query,
+      { slug },
+      { next: { revalidate: 0 } },
+    )
+  ) ?? null
 }
 
 export async function fetchRecentPosts(limit: number = 4): Promise<PostItem[]> {
@@ -77,11 +79,13 @@ export async function fetchRecentPosts(limit: number = 4): Promise<PostItem[]> {
     "imageUrl": coalesce(mainImage.asset->url, image.asset->url),
     "date": coalesce(scheduleDate, publishedAt, _createdAt)
   }`
-  return await client.fetch<PostItem[]>(
-    query,
-    { limit },
-    { next: { revalidate: 0 } },
-  )
+  return (
+    await safeFetch<PostItem[]>(
+      query,
+      { limit },
+      { next: { revalidate: 0 } },
+    )
+  ) ?? []
 }
 
 /**
@@ -89,11 +93,13 @@ export async function fetchRecentPosts(limit: number = 4): Promise<PostItem[]> {
  */
 export async function fetchCategories(): Promise<string[]> {
   const query = groq`*[_type == "category"].title`
-  const categoryTitles = await client.fetch<string[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
+  const categoryTitles = (
+    await safeFetch<string[]>(
+      query,
+      {},
+      { next: { revalidate: 0 } },
+    )
+  ) ?? []
 
   if (categoryTitles && categoryTitles.length > 0) {
     return Array.from(new Set(categoryTitles.filter(Boolean)))
@@ -108,11 +114,13 @@ export async function fetchCategoryCounts(): Promise<CategoryCount[]> {
   const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && defined(category)] {
     "category": coalesce(category->title, category->name, category)
   }`
-  const posts = await client.fetch<{ category: string }[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
+  const posts = (
+    await safeFetch<{ category: string }>(
+      query,
+      {},
+      { next: { revalidate: 0 } },
+    )
+  ) ?? []
 
   const counts: Record<string, number> = {}
   posts.forEach((item) => {
@@ -161,33 +169,43 @@ export async function fetchFilteredPosts(
     ${POST_FIELDS}
   }`
 
-  return await client.fetch<PostItem[]>(query, params, {
-    next: { revalidate: 0 },
-  })
+  return (
+    await safeFetch<PostItem[]>(query, params, {
+      next: { revalidate: 0 },
+    })
+  ) ?? []
 }
 
 export async function fetchPosts(): Promise<PostItem[]> {
   const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc) { ${POST_FIELDS} }`
-  return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
+  return (
+    await safeFetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
+  ) ?? []
 }
 
 export async function fetchLatestPosts(limit: number = 5): Promise<PostItem[]> {
   const query = groq`*[_type == "post" && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc)[0...$limit] { ${POST_FIELDS} }`
-  return await client.fetch<PostItem[]>(
-    query,
-    { limit },
-    { next: { revalidate: 0 } },
-  )
+  return (
+    await safeFetch<PostItem[]>(
+      query,
+      { limit },
+      { next: { revalidate: 0 } },
+    )
+  ) ?? []
 }
 
 export async function fetchFeaturedPosts(): Promise<PostItem[]> {
   const query = groq`*[_type == "post" && isFeatured == true && coalesce(scheduleDate, publishedAt, _createdAt) <= now() && !(_id in path("drafts.**"))] | order(coalesce(scheduleDate, publishedAt, _createdAt) desc) { ${POST_FIELDS} }`
-  return await client.fetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
+  return (
+    await safeFetch<PostItem[]>(query, {}, { next: { revalidate: 0 } })
+  ) ?? []
 }
 
 export async function fetchFaqs(): Promise<FaqItem[]> {
   const query = groq`*[_type == "faq"] { _id, question, answer }`
-  return await client.fetch<FaqItem[]>(query, {}, { next: { revalidate: 0 } })
+  return (
+    await safeFetch<FaqItem[]>(query, {}, { next: { revalidate: 0 } })
+  ) ?? []
 }
 
 export async function fetchPortfolio(
@@ -218,41 +236,51 @@ export async function fetchPortfolio(
     _createdAt
   }`
 
-  return await client.fetch<PortfolioItem[]>(query, params, {
-    next: { revalidate: 0 },
-  })
+  return (
+    await safeFetch<PortfolioItem[]>(query, params, {
+      next: { revalidate: 0 },
+    })
+  ) ?? []
 }
 
 export async function fetchServices(): Promise<ServiceItem[]> {
   const query = groq`*[_type == "service"] { _id, title, icon, description, "category": coalesce(category->title, category->name, category) }`
-  return await client.fetch<ServiceItem[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
+  return (
+    await safeFetch<ServiceItem[]>(
+      query,
+      {},
+      { next: { revalidate: 0 } },
+    )
+  ) ?? []
 }
 
 export async function fetchStats(): Promise<StatItem[]> {
   const query = groq`*[_type == "stat"] { _id, value, label }`
-  return await client.fetch<StatItem[]>(query, {}, { next: { revalidate: 0 } })
+  return (
+    await safeFetch<StatItem[]>(query, {}, { next: { revalidate: 0 } })
+  ) ?? []
 }
 
 export async function fetchTeam(): Promise<TeamMember[]> {
   const query = groq`*[_type == "teamMember"] | order(order asc) { _id, name, role, "imageUrl": image.asset->url, order }`
-  return await client.fetch<TeamMember[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
+  return (
+    await safeFetch<TeamMember[]>(
+      query,
+      {},
+      { next: { revalidate: 0 } },
+    )
+  ) ?? []
 }
 
 export async function fetchTestimonials(): Promise<TestimonialItem[]> {
   const query = groq`*[_type == "testimonial"] | order(_createdAt desc) { _id, name, title, "imageUrl": image.asset->url, quote }`
-  return await client.fetch<TestimonialItem[]>(
-    query,
-    {},
-    { next: { revalidate: 0 } },
-  )
+  return (
+    await safeFetch<TestimonialItem[]>(
+      query,
+      {},
+      { next: { revalidate: 0 } },
+    )
+  ) ?? []
 }
 
 export async function fetchSpotlightData(
@@ -283,7 +311,7 @@ export async function fetchSpotlightData(
     bannerCtaUrl
   }`
 
-  const data = await client.fetch(
+  const data = await safeFetch<any>(
     query,
     { category },
     { next: { revalidate: 0 } },
