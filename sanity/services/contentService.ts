@@ -224,7 +224,7 @@ export async function fetchPortfolio(
 }
 
 export async function fetchServices(): Promise<ServiceItem[]> {
-  const query = groq`*[_type == "service"] { _id, title, icon, description }`
+  const query = groq`*[_type == "service"] { _id, title, icon, description, "category": coalesce(category->title, category->name, category) }`
   return await client.fetch<ServiceItem[]>(
     query,
     {},
