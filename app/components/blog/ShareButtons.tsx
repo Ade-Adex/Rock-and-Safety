@@ -7,6 +7,7 @@ import {
   FaTwitter,
   FaLinkedinIn,
   FaWhatsapp,
+  FaPinterestP,
   FaLink,
   FaShareAlt,
 } from 'react-icons/fa'
@@ -14,43 +15,69 @@ import {
 interface ShareButtonsProps {
   title: string
   url: string
+  /** Optional hero image URL — passed to Pinterest's "media" parameter */
+  image?: string
   compact?: boolean
 }
 
 /**
  * Social share buttons for blog posts.
- * Uses direct share URLs for Facebook, X, LinkedIn & WhatsApp plus a
+ * Uses direct share URLs for Facebook, X, LinkedIn, WhatsApp & Pinterest plus a
  * copy-link button and (when available) the native Web Share API.
+ * Every icon carries its official brand colour, and hovering a button fills it
+ * with that same brand colour (icon flips to white).
  */
 export default function ShareButtons({
   title,
   url,
+  image,
   compact = false,
 }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false)
   const encodedTitle = encodeURIComponent(title)
   const encodedUrl = encodeURIComponent(url)
+  const encodedImage = image ? encodeURIComponent(image) : ''
 
+  // Official brand colours — stored as complete class literals so Tailwind's
+  // scanner picks them up at build time (icon tint + matching hover fill).
   const shareLinks = [
     {
       name: 'Facebook',
       href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
       icon: FaFacebookF,
+      iconColor: 'text-[#1877F2]',
+      hoverBg: 'hover:bg-[#1877F2] hover:border-[#1877F2]',
     },
     {
       name: 'X (Twitter)',
       href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
       icon: FaTwitter,
+      iconColor: 'text-white',
+      hoverBg: 'hover:bg-black hover:border-white',
     },
     {
       name: 'LinkedIn',
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
       icon: FaLinkedinIn,
+      iconColor: 'text-[#0A66C2]',
+      hoverBg: 'hover:bg-[#0A66C2] hover:border-[#0A66C2]',
     },
     {
       name: 'WhatsApp',
       href: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
       icon: FaWhatsapp,
+      iconColor: 'text-[#25D366]',
+      hoverBg: 'hover:bg-[#25D366] hover:border-[#25D366]',
+    },
+    {
+      name: 'Pinterest',
+      // "media" gives Pinterest the image to pin — required for a good pin UX
+      href: `https://pinterest.com/pin/create/button/?url=${encodedUrl}${
+        encodedImage ? `&media=${encodedImage}` : ''
+      }&description=${encodedTitle}`,
+      icon: FaPinterestP,
+      iconColor: 'text-[#E60023]',
+      hoverBg: 'hover:bg-[#E60023] hover:border-[#E60023]',
     },
   ]
 
@@ -102,9 +129,12 @@ export default function ShareButtons({
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Share on ${link.name}`}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-card-bg border border-card-border text-muted hover:text-white hover:bg-primary hover:border-primary transition-colors"
+            title={`Share on ${link.name}`}
+            className={`group w-8 h-8 flex items-center justify-center rounded-full bg-card-bg border border-card-border transition-colors duration-200 ${link.hoverBg}`}
           >
-            <Icon className="w-3.5 h-3.5" />
+            <Icon
+              className={`w-3.5 h-3.5 transition-colors duration-200 group-hover:text-white ${link.iconColor}`}
+            />
           </Link>
         )
       })}
@@ -113,7 +143,7 @@ export default function ShareButtons({
         type="button"
         onClick={handleNativeShare}
         aria-label="Share via device options"
-        className="w-8 h-8 flex items-center justify-center rounded-full bg-card-bg border border-card-border text-muted hover:text-white hover:bg-primary hover:border-primary transition-colors"
+        className="w-8 h-8 flex items-center justify-center rounded-full bg-card-bg border border-card-border text-muted hover:text-white hover:bg-primary hover:border-primary transition-colors cursor-pointer"
       >
         <FaShareAlt className="w-3.5 h-3.5" />
       </button>
@@ -122,7 +152,7 @@ export default function ShareButtons({
         type="button"
         onClick={handleCopy}
         aria-label="Copy link to clipboard"
-        className="w-8 h-8 flex items-center justify-center rounded-full bg-card-bg border border-card-border text-muted hover:text-white hover:bg-primary hover:border-primary transition-colors"
+        className="w-8 h-8 flex items-center justify-center rounded-full bg-card-bg border border-card-border text-muted hover:text-white hover:bg-primary hover:border-primary transition-colors cursor-pointer"
       >
         <FaLink className="w-3.5 h-3.5" />
       </button>

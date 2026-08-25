@@ -201,7 +201,12 @@ export default async function BlogDetailsPage({
 
             {/* Share Buttons */}
             <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-              <ShareButtons title={post.title} url={shareUrl} compact />
+              <ShareButtons
+                title={post.title}
+                url={shareUrl}
+                image={typeof post.imageUrl === 'string' ? post.imageUrl : undefined}
+                compact
+              />
             </div>
 
             {post.imageUrl && typeof post.imageUrl === 'string' && (
@@ -271,7 +276,7 @@ export default async function BlogDetailsPage({
             {/* <BlogAuthorBio author={post.author} /> */}
 
             {/* Share / Feedback Row */}
-            <div className="py-6 border-t border-gray-800/60 border-b border-card-border mb-8">
+            <div className="py-6 border-t border-b border-card-border mb-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h4 className="text-sm font-bold text-foreground">
@@ -281,7 +286,11 @@ export default async function BlogDetailsPage({
                     Share it with your network 👇
                   </p>
                 </div>
-                <ShareButtons title={post.title} url={shareUrl} />
+                <ShareButtons
+                  title={post.title}
+                  url={shareUrl}
+                  image={typeof post.imageUrl === 'string' ? post.imageUrl : undefined}
+                />
               </div>
             </div>
 
